@@ -2,6 +2,11 @@ import { McpAgent } from "agents/mcp";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
+// Escape LIKE special characters in user input to prevent wildcard injection
+function escapeLike(s: string): string {
+  return s.replace(/[%_\\]/g, '\\$&');
+}
+
 interface Env {
   DB: D1Database;
   MCP_OBJECT: DurableObjectNamespace;
@@ -52,10 +57,11 @@ export class RootsMCP extends McpAgent<Env> {
         }
 
         if (!ingredient) {
+          const qEsc = escapeLike(q);
           ingredient = await this.env.DB.prepare(
-            `SELECT * FROM ingredients WHERE name LIKE ? COLLATE NOCASE LIMIT 1`
+            `SELECT * FROM ingredients WHERE name LIKE ? ESCAPE '\\' COLLATE NOCASE LIMIT 1`
           )
-            .bind(`%${q}%`)
+            .bind(`%${qEsc}%`)
             .first();
         }
 
@@ -226,11 +232,12 @@ export class RootsMCP extends McpAgent<Env> {
             .first();
 
           if (!ingredient) {
+            const nameEsc = escapeLike(name);
             ingredient = await this.env.DB.prepare(
               `SELECT name, inci, cas, safety, eu_status, eu_max, us_status, concern, flags, noael_value
-               FROM ingredients WHERE name LIKE ? COLLATE NOCASE LIMIT 1`
+               FROM ingredients WHERE name LIKE ? ESCAPE '\\' COLLATE NOCASE LIMIT 1`
             )
-              .bind(`%${name}%`)
+              .bind(`%${nameEsc}%`)
               .first();
           }
 
@@ -322,21 +329,22 @@ export class RootsMCP extends McpAgent<Env> {
       },
       async ({ query, limit }) => {
         const maxResults = Math.min(Math.max(limit || 10, 1), 20);
+        const queryEsc = escapeLike(query);
 
         const results = await this.env.DB.prepare(
           `SELECT name, inci, cas, function, safety, eu_status, concern, noael_value
            FROM ingredients
-           WHERE name LIKE ? COLLATE NOCASE
-              OR inci LIKE ? COLLATE NOCASE
-              OR function LIKE ? COLLATE NOCASE
-              OR category LIKE ? COLLATE NOCASE
+           WHERE name LIKE ? ESCAPE '\\' COLLATE NOCASE
+              OR inci LIKE ? ESCAPE '\\' COLLATE NOCASE
+              OR function LIKE ? ESCAPE '\\' COLLATE NOCASE
+              OR category LIKE ? ESCAPE '\\' COLLATE NOCASE
            LIMIT ?`
         )
           .bind(
-            `%${query}%`,
-            `%${query}%`,
-            `%${query}%`,
-            `%${query}%`,
+            `%${queryEsc}%`,
+            `%${queryEsc}%`,
+            `%${queryEsc}%`,
+            `%${queryEsc}%`,
             maxResults
           )
           .all();
@@ -370,6 +378,195 @@ export class RootsMCP extends McpAgent<Env> {
         };
       }
     );
+
+    // Tool 4: calculate_mos — Margin of Safety calculation per SCCS guidelines
+    this.server.tool(
+      "calculate_mos",
+      "Calculate the Margin of Safety (MoS) for a cosmetic ingredient using SCCS Notes of Guidance methodology. Requires ingredient name (or CAS), concentration in product (%), and product type. Returns SED (Systemic Exposure Dose), MoS value, and whether it passes the SCCS safety threshold (MoS > 100).",
+      {
+        ingredient: z
+          .string()
+          .describe(
+            "Ingredient name, INCI name, or CAS number (e.g. 'retinol', '68-26-8')"
+          ),
+        concentration: z
+          .number()
+          .describe("Concentration of ingredient in the product (%, e.g. 0.5 for 0.5%)"),
+        product_type: z
+          .string()
+          .describe(
+            "Product type (e.g. 'body lotion', 'shampoo', 'lipstick', 'face cream', 'hand cream', 'shower gel', 'toothpaste', 'mouthwash', 'hair styling', 'deodorant')"
+          ),
+        body_weight: z
+          .number()
+          .optional()
+          .describe("Body weight in kg (default: 60 for adults)"),
+        dermal_absorption: z
+          .number()
+          .optional()
+          .describe(
+            "Dermal absorption percentage override (if known from studies). If not provided, uses SCCS default of 50%."
+          ),
+      },
+      async ({ ingredient, concentration, product_type, body_weight, dermal_absorption }) => {
+        const bw = body_weight || 60;
+
+        // 1. Look up the ingredient for NOAEL
+        const q = ingredient.trim();
+        const qEsc = escapeLike(q);
+        const ing = await this.env.DB.prepare(
+          `SELECT name, cas, noael_value, dermal_absorption as da
+           FROM ingredients
+           WHERE name LIKE ? ESCAPE '\\' COLLATE NOCASE OR inci LIKE ? ESCAPE '\\' COLLATE NOCASE OR cas = ?
+           LIMIT 1`
+        )
+          .bind(`%${qEsc}%`, `%${qEsc}%`, q)
+          .first();
+
+        // Also check noael_studies for the best NOAEL
+        const noaelStudy = await this.env.DB.prepare(
+          `SELECT substance_name, value, species, route, duration, study_type, source
+           FROM noael_studies
+           WHERE substance_name LIKE ? ESCAPE '\\' COLLATE NOCASE
+           ORDER BY CASE WHEN route LIKE '%dermal%' THEN 0 WHEN route LIKE '%oral%' THEN 1 ELSE 2 END,
+                    CAST(value AS REAL) ASC
+           LIMIT 1`
+        )
+          .bind(`%${qEsc}%`)
+          .first();
+
+        // 2. Look up SCCS exposure parameters for product type
+        const ptEsc = escapeLike(product_type.trim());
+        const exposure = await this.env.DB.prepare(
+          `SELECT * FROM sccs_exposure_parameters
+           WHERE product_type LIKE ? ESCAPE '\\' COLLATE NOCASE
+              OR product_category LIKE ? ESCAPE '\\' COLLATE NOCASE
+           LIMIT 1`
+        )
+          .bind(`%${ptEsc}%`, `%${ptEsc}%`)
+          .first();
+
+        // Get NOAEL value
+        let noael: number | null = null;
+        let noaelSource = "none";
+
+        if (noaelStudy && noaelStudy.value) {
+          noael = parseFloat(String(noaelStudy.value));
+          noaelSource = `${noaelStudy.species || "unknown species"}, ${noaelStudy.route || "unknown route"}, ${noaelStudy.duration || "unknown duration"} (${noaelStudy.source || "study"})`;
+        } else if (ing && ing.noael_value) {
+          noael = parseFloat(String(ing.noael_value));
+          noaelSource = "ingredient database";
+        }
+
+        if (!noael || isNaN(noael)) {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: `## MoS Calculation — Cannot Complete\n\n**Ingredient:** ${q}\n**Reason:** No NOAEL value found for this ingredient in our database (46,000+ studies searched).\n\nTo calculate MoS, a NOAEL (No Observed Adverse Effect Level) is required. Consider:\n- Searching with the CAS number or exact INCI name\n- Checking if the ingredient has an alternative name\n- The substance may not have published toxicology data`,
+              },
+            ],
+          };
+        }
+
+        // Get exposure parameters
+        let dailyExposure = 0;
+        let retentionFactor = 1;
+        let productLabel = product_type;
+
+        if (exposure) {
+          dailyExposure = parseFloat(String(exposure.estimated_daily_amount_g_per_day || exposure.calculated_daily_exposure_g_per_day || 0));
+          retentionFactor = parseFloat(String(exposure.retention_factor || 1));
+          productLabel = String(exposure.product_type || product_type);
+        } else {
+          // Default values if product type not found
+          const defaults: Record<string, [number, number]> = {
+            "body lotion": [17.4, 1],
+            "face cream": [1.54, 1],
+            "hand cream": [2.16, 1],
+            "shampoo": [10.46, 0.01],
+            "shower gel": [18.67, 0.01],
+            "lipstick": [0.057, 1],
+            "toothpaste": [2.75, 0.05],
+            "mouthwash": [21.62, 0.1],
+            "deodorant": [1.5, 1],
+            "hair styling": [3.92, 0.1],
+            "mascara": [0.025, 1],
+            "eyeliner": [0.005, 1],
+            "foundation": [0.51, 1],
+            "hair dye": [100, 0.001],
+          };
+
+          const key = Object.keys(defaults).find(k =>
+            product_type.toLowerCase().includes(k)
+          );
+          if (key) {
+            dailyExposure = defaults[key][0];
+            retentionFactor = defaults[key][1];
+          } else {
+            dailyExposure = 17.4; // default: body lotion (worst case leave-on)
+            retentionFactor = 1;
+          }
+        }
+
+        // Dermal absorption: use override > ingredient DB > default 50%
+        const da = dermal_absorption ||
+          (ing && ing.da ? parseFloat(String(ing.da)) : 50);
+
+        // 3. Calculate SED
+        // SED = (daily_exposure_mg × concentration/100 × retention_factor × dermal_absorption/100) / body_weight
+        // dailyExposure is in g/day, multiply by 1000 to convert to mg/day (NOAEL is in mg/kg/day)
+        const sed = (dailyExposure * 1000 * (concentration / 100) * retentionFactor * (da / 100)) / bw;
+
+        // Convert NOAEL to mg/kg/day if needed (assume already in mg/kg/day)
+        const noaelMgKgDay = noael;
+
+        // 4. Calculate MoS
+        const mos = noaelMgKgDay / sed;
+        const passes = mos >= 100;
+
+        // 5. Format response
+        let text = `## Margin of Safety Calculation\n\n`;
+        text += `### Input Parameters\n`;
+        text += `- **Ingredient:** ${ing ? ing.name : q}${ing && ing.cas ? ` (CAS: ${ing.cas})` : ""}\n`;
+        text += `- **Concentration:** ${concentration}%\n`;
+        text += `- **Product type:** ${productLabel}\n`;
+        text += `- **Body weight:** ${bw} kg\n\n`;
+
+        text += `### SCCS Exposure Parameters\n`;
+        text += `- **Daily exposure (Eproduct):** ${dailyExposure} g/day\n`;
+        text += `- **Retention factor:** ${retentionFactor}\n`;
+        text += `- **Dermal absorption:** ${da}%${dermal_absorption ? " (user-specified)" : ing && ing.da ? " (from database)" : " (SCCS default)"}\n\n`;
+
+        text += `### Toxicological Reference\n`;
+        text += `- **NOAEL:** ${noaelMgKgDay} mg/kg/day\n`;
+        text += `- **Source:** ${noaelSource}\n\n`;
+
+        text += `### Calculation\n`;
+        text += `\`\`\`\n`;
+        text += `SED = (${dailyExposure} g/day × ${concentration}/100 × ${retentionFactor} × ${da}/100) / ${bw} kg\n`;
+        text += `SED = ${sed.toFixed(6)} mg/kg/day\n\n`;
+        text += `MoS = NOAEL / SED\n`;
+        text += `MoS = ${noaelMgKgDay} / ${sed.toFixed(6)}\n`;
+        text += `MoS = ${mos.toFixed(1)}\n`;
+        text += `\`\`\`\n\n`;
+
+        text += `### Result\n`;
+        text += `- **MoS = ${mos.toFixed(1)}**\n`;
+        text += `- **SCCS threshold: MoS > 100**\n`;
+        text += `- **Verdict: ${passes ? "PASSES — Considered safe at this concentration" : "FAILS — MoS below 100, concentration may need to be reduced"}**\n\n`;
+
+        if (!passes) {
+          const maxConc = (noaelMgKgDay * bw * 100) / (dailyExposure * retentionFactor * (da / 100) * 100);
+          text += `### Recommendation\n`;
+          text += `To achieve MoS > 100, maximum concentration should be ≤ **${maxConc.toFixed(3)}%**\n`;
+        }
+
+        text += `\n---\n*Calculation follows SCCS Notes of Guidance (11th Revision, SCCS/1628/21)*`;
+
+        return { content: [{ type: "text" as const, text }] };
+      }
+    );
   }
 }
 
@@ -389,7 +586,7 @@ export default {
           name: "Roots by Benda MCP Server",
           version: "1.0.0",
           status: "healthy",
-          tools: ["check_ingredient", "check_formula", "search_ingredients"],
+          tools: ["check_ingredient", "check_formula", "search_ingredients", "calculate_mos"],
           data: {
             ingredients: "30,000+",
             noael_studies: "46,000+",
