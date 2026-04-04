@@ -29,8 +29,14 @@ export class RootsMCP extends McpAgent<Env> {
           .describe(
             "Ingredient name, INCI name, or CAS number (e.g. 'retinol', 'RETINOL', '68-26-8')"
           ),
+        jurisdiction: z
+          .string()
+          .optional()
+          .describe(
+            "Target jurisdiction for restriction check (e.g. 'EU', 'US', 'CN', 'CA', 'KR', 'JP', 'BR', 'ASEAN', 'GCC', 'AU', 'IN', 'UK'). If provided, returns jurisdiction-specific restrictions."
+          ),
       },
-      async ({ query }) => {
+      async ({ query, jurisdiction }) => {
         const q = query.trim();
 
         // Try exact key match first, then CAS, then INCI, then fuzzy name
@@ -81,32 +87,136 @@ export class RootsMCP extends McpAgent<Env> {
           };
         }
 
-        // Fetch NOAEL studies for this ingredient
-        const noaelStudies = await this.env.DB.prepare(
-          `SELECT endpoint_type, value, qualifier, unit, study_type, route, duration, species, source, reference
-           FROM noael_studies
-           WHERE substance_name = ? COLLATE NOCASE OR cas_number = ?
-           LIMIT 10`
-        )
-          .bind(
-            ingredient.name as string,
-            (ingredient.cas as string) || ""
-          )
-          .all();
+        // --- All enrichment queries in parallel ---
+        const inci = (ingredient.inci as string) || "";
+        const cas = (ingredient.cas as string) || "";
+        const nameStr = (ingredient.name as string) || "";
+        const nameEscaped = escapeLike(nameStr);
 
-        // Fetch regulatory list entries
-        const regLists = await this.env.DB.prepare(
-          `SELECT list_key, list_name FROM regulatory_lists
-           WHERE chemical_name = ? COLLATE NOCASE OR cas_number = ?
-           LIMIT 20`
-        )
-          .bind(
-            ingredient.name as string,
-            (ingredient.cas as string) || ""
-          )
-          .all();
+        const [
+          noaelStudies,
+          regLists,
+          jurisdictionResults,
+          safetyOpinions,
+          allergenCheck,
+          ifraCheck,
+          svhcCheck,
+          edCheck,
+          iecicCheck,
+          cirCheck,
+          sensitCheck,
+          mosCalcResults,
+          sccsNoaelResults,
+          dermalPenCheck,
+        ] = await Promise.all([
+          // 1. NOAEL studies
+          this.env.DB.prepare(
+            `SELECT endpoint_type, value, qualifier, unit, study_type, route, duration, species, source, reference
+             FROM noael_studies
+             WHERE substance_name = ? COLLATE NOCASE OR cas_number = ?
+             LIMIT 10`
+          ).bind(nameStr, cas).all(),
 
-        const result = {
+          // 2. Regulatory list entries
+          this.env.DB.prepare(
+            `SELECT list_key, list_name FROM regulatory_lists
+             WHERE chemical_name = ? COLLATE NOCASE OR cas_number = ?
+             LIMIT 20`
+          ).bind(nameStr, cas).all(),
+
+          // 3. Jurisdiction restrictions (always query — filter result later)
+          jurisdiction
+            ? this.env.DB.prepare(
+                `SELECT jurisdiction, status, max_concentration_percent, product_type_restriction, conditions, regulation_reference
+                 FROM jurisdiction_restrictions
+                 WHERE (inci_name = ? COLLATE NOCASE OR cas_number = ? OR ingredient_name = ? COLLATE NOCASE)
+                   AND jurisdiction = ? COLLATE NOCASE
+                 LIMIT 10`
+              ).bind(inci, cas, nameStr, jurisdiction.toUpperCase()).all()
+            : Promise.resolve({ results: [] as Record<string, unknown>[] }),
+
+          // 4. SCCS/CIR safety opinions
+          this.env.DB.prepare(
+            `SELECT source, sccs_reference, noael_value, noael_unit, noael_route,
+                    max_concentration_percent, product_type, safety_verdict, conclusion_text, opinion_date
+             FROM safety_opinions
+             WHERE ingredient_name LIKE ? ESCAPE '\\' COLLATE NOCASE
+                OR cas_number = ?
+             LIMIT 10`
+          ).bind(`%${nameEscaped}%`, cas).all(),
+
+          // 5. EU allergen status
+          this.env.DB.prepare(
+            `SELECT annex_iii_entry, chemical_name, inci_name, cas_numbers, category, status,
+                    leave_on_threshold_pct, rinse_off_threshold_pct, additional_restrictions
+             FROM eu_allergens WHERE inci_name = ? COLLATE NOCASE OR cas_numbers LIKE ? LIMIT 1`
+          ).bind(inci || nameStr, `%${cas}%`).first(),
+
+          // 6. IFRA fragrance standard
+          this.env.DB.prepare(
+            `SELECT ingredient_name, standard_type, amendment, cas_number, pdf_url
+             FROM ifra_standards WHERE cas_number LIKE ? OR ingredient_name LIKE ? ESCAPE '\\' COLLATE NOCASE LIMIT 1`
+          ).bind(`%${cas}%`, `%${nameEscaped}%`).first(),
+
+          // 7. ECHA SVHC status
+          this.env.DB.prepare(
+            `SELECT substance_name, cas_number, reason, date_of_inclusion
+             FROM echa_svhc WHERE cas_number = ? OR substance_name LIKE ? ESCAPE '\\' COLLATE NOCASE LIMIT 1`
+          ).bind(cas, `%${nameEscaped}%`).first(),
+
+          // 8. Endocrine disruptor status
+          this.env.DB.prepare(
+            `SELECT substance_name, cas_number, ed_category, regulatory_status, ed_effects
+             FROM endocrine_disruptors WHERE cas_number = ? OR substance_name LIKE ? ESCAPE '\\' COLLATE NOCASE LIMIT 1`
+          ).bind(cas, `%${nameEscaped}%`).first(),
+
+          // 9. China IECIC listing
+          this.env.DB.prepare(
+            `SELECT inci_name, chinese_name, remarks FROM china_iecic
+             WHERE inci_name = ? COLLATE NOCASE LIMIT 1`
+          ).bind(inci || nameStr).first(),
+
+          // 10. CIR safety conclusions
+          this.env.DB.prepare(
+            `SELECT conclusion, max_concentration, notes, year_final_report, re_review_status
+             FROM cir_safety_conclusions WHERE inci_name = ? COLLATE NOCASE OR cas_number = ? LIMIT 1`
+          ).bind(inci || nameStr, cas).first(),
+
+          // 11. Sensitization profile
+          this.env.DB.prepare(
+            `SELECT eu_allergen_listed, allergen_class, cross_reactivity_group, patch_test_frequency_pct,
+                    sensitization_rate, common_reaction_type, ifra_restricted, ifra_max_level_pct, source
+             FROM sensitization_profiles WHERE inci_name = ? COLLATE NOCASE LIMIT 1`
+          ).bind(inci || nameStr).first(),
+
+          // 12. MoS calculations
+          this.env.DB.prepare(
+            `SELECT noael_pod, pod_type, dermal_absorption_pct, sed, mos_value, mos_threshold,
+                    safety_conclusion, product_type, max_use_conc, sccs_reference, opinion_year
+             FROM mos_calculations WHERE inci_name = ? COLLATE NOCASE OR cas_number = ?
+             ORDER BY opinion_year DESC LIMIT 5`
+          ).bind(inci || nameStr, cas).all(),
+
+          // 13. SCCS NOAEL database
+          this.env.DB.prepare(
+            `SELECT noael_mgkgday, loael_mgkgday, route, species, study_type, study_duration,
+                    absorption_pct_used_by_sccs, sccs_opinion_number, opinion_year
+             FROM sccs_noael_database WHERE inci_name = ? COLLATE NOCASE OR cas_number = ?
+             ORDER BY opinion_year DESC LIMIT 5`
+          ).bind(inci || nameStr, cas).all(),
+
+          // 14. Dermal penetration profile
+          this.env.DB.prepare(
+            `SELECT molecular_weight_da, log_p_value, skin_penetration_level, penetration_depth,
+                    absorption_pct, systemic_absorption, bioavailability_topical_pct, safety_margin_factor, source
+             FROM dermal_penetration_profiles WHERE inci_name = ? COLLATE NOCASE LIMIT 1`
+          ).bind(inci || nameStr).first(),
+        ]);
+
+        const jurisdictionRestrictions = (jurisdictionResults.results || []) as Record<string, unknown>[];
+
+        // --- Build result object ---
+        const result: Record<string, unknown> = {
           name: ingredient.name,
           inci: ingredient.inci,
           cas: ingredient.cas,
@@ -158,6 +268,154 @@ export class RootsMCP extends McpAgent<Env> {
           source: "Roots by Benda — rootsbybenda.com",
           data_verified: "2026-03",
         };
+
+        // Attach enrichment results
+        if (safetyOpinions.results && safetyOpinions.results.length > 0) {
+          result.safety_opinions = (safetyOpinions.results as Record<string, unknown>[]).map((so) => ({
+            source: so.source,
+            reference: so.sccs_reference || null,
+            noael_value: so.noael_value || null,
+            noael_unit: so.noael_unit || null,
+            noael_route: so.noael_route || null,
+            max_concentration_percent: so.max_concentration_percent || null,
+            product_type: so.product_type || null,
+            verdict: so.safety_verdict,
+            conclusion: so.conclusion_text || null,
+            date: so.opinion_date || null,
+          }));
+        }
+
+        if (allergenCheck) {
+          result.eu_allergen = {
+            status: allergenCheck.status,
+            category: allergenCheck.category,
+            leave_on_threshold: allergenCheck.leave_on_threshold_pct,
+            rinse_off_threshold: allergenCheck.rinse_off_threshold_pct,
+            restrictions: allergenCheck.additional_restrictions || null,
+          };
+        }
+
+        if (ifraCheck) {
+          result.ifra_standard = {
+            type: ifraCheck.standard_type,
+            amendment: ifraCheck.amendment,
+            pdf: ifraCheck.pdf_url || null,
+          };
+        }
+
+        if (svhcCheck) {
+          result.echa_svhc = {
+            status: "SUBSTANCE_OF_VERY_HIGH_CONCERN",
+            reason: svhcCheck.reason,
+            date_added: svhcCheck.date_of_inclusion,
+          };
+        }
+
+        if (edCheck) {
+          result.endocrine_disruptor = {
+            category: edCheck.ed_category,
+            regulatory_status: edCheck.regulatory_status,
+            effects: edCheck.ed_effects || null,
+          };
+        }
+
+        if (iecicCheck) {
+          result.china_iecic = {
+            status: "listed",
+            chinese_name: iecicCheck.chinese_name,
+            remarks: iecicCheck.remarks || null,
+          };
+        } else {
+          result.china_iecic = { status: "NOT_LISTED" };
+        }
+
+        if (jurisdiction) {
+          result.jurisdiction_checked = jurisdiction.toUpperCase();
+          if (jurisdictionRestrictions.length > 0) {
+            result.jurisdiction_restrictions = jurisdictionRestrictions.map((jr) => ({
+              status: jr.status,
+              max_concentration: jr.max_concentration_percent || null,
+              product_restriction: jr.product_type_restriction || null,
+              conditions: jr.conditions || null,
+              regulation: jr.regulation_reference || null,
+            }));
+          } else {
+            result.jurisdiction_restrictions = [];
+            result.jurisdiction_note = `No specific restrictions found for this ingredient in ${jurisdiction.toUpperCase()}. This may mean it is permitted without special limits, or data is not yet available for this jurisdiction.`;
+          }
+        }
+
+        // CIR safety conclusion
+        if (cirCheck) {
+          result.cir_conclusion = {
+            verdict: (cirCheck.conclusion as string || "").replace(/_/g, " "),
+            max_concentration: cirCheck.max_concentration || null,
+            report_reference: cirCheck.year_final_report || null,
+            re_review_status: cirCheck.re_review_status || null,
+            notes: cirCheck.notes || null,
+          };
+        }
+
+        // Sensitization profile
+        if (sensitCheck) {
+          result.sensitization_profile = {
+            rate: sensitCheck.sensitization_rate,
+            allergen_class: sensitCheck.allergen_class,
+            eu_allergen_listed: sensitCheck.eu_allergen_listed,
+            patch_test_positive_pct: sensitCheck.patch_test_frequency_pct || null,
+            cross_reactivity_group: sensitCheck.cross_reactivity_group || null,
+            reaction_type: sensitCheck.common_reaction_type || null,
+            ifra_restricted: sensitCheck.ifra_restricted,
+            ifra_max_level_pct: sensitCheck.ifra_max_level_pct || null,
+          };
+        }
+
+        // MoS calculations
+        if (mosCalcResults.results && mosCalcResults.results.length > 0) {
+          result.mos_calculations = (mosCalcResults.results as Record<string, unknown>[]).map((m) => ({
+            noael_pod: m.noael_pod || null,
+            pod_type: m.pod_type || null,
+            dermal_absorption_pct: m.dermal_absorption_pct || null,
+            sed: m.sed || null,
+            mos_value: m.mos_value || null,
+            mos_threshold: m.mos_threshold || 100,
+            safety_conclusion: m.safety_conclusion || null,
+            product_type: m.product_type || null,
+            max_use_concentration: m.max_use_conc || null,
+            sccs_reference: m.sccs_reference || null,
+            opinion_year: m.opinion_year || null,
+          }));
+        }
+
+        // SCCS NOAEL values
+        if (sccsNoaelResults.results && sccsNoaelResults.results.length > 0) {
+          result.sccs_noael_values = (sccsNoaelResults.results as Record<string, unknown>[]).map((s) => ({
+            noael_mg_kg_day: s.noael_mgkgday || null,
+            loael_mg_kg_day: s.loael_mgkgday || null,
+            route: s.route || null,
+            species: s.species || null,
+            study_type: s.study_type || null,
+            study_duration: s.study_duration || null,
+            dermal_absorption_pct_sccs: s.absorption_pct_used_by_sccs || null,
+            sccs_opinion: s.sccs_opinion_number || null,
+            opinion_year: s.opinion_year || null,
+          }));
+        }
+
+        // Dermal penetration profile
+        if (dermalPenCheck) {
+          result.dermal_penetration = {
+            absorption_pct: dermalPenCheck.absorption_pct || null,
+            penetration_level: dermalPenCheck.skin_penetration_level || null,
+            penetration_depth: dermalPenCheck.penetration_depth || null,
+            molecular_weight_da: dermalPenCheck.molecular_weight_da || null,
+            log_p: dermalPenCheck.log_p_value || null,
+            systemic_absorption: dermalPenCheck.systemic_absorption || null,
+            bioavailability_topical_pct: dermalPenCheck.bioavailability_topical_pct || null,
+            safety_margin_factor: dermalPenCheck.safety_margin_factor || null,
+            source: dermalPenCheck.source || null,
+          };
+        }
 
         return {
           content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
@@ -265,14 +523,84 @@ export class RootsMCP extends McpAgent<Env> {
               flags,
             };
 
+            // Check jurisdiction-specific restrictions if jurisdiction is provided
+            if (jurisdiction) {
+              const jrResults = await this.env.DB.prepare(
+                `SELECT status, max_concentration_percent, product_type_restriction, conditions, regulation_reference
+                 FROM jurisdiction_restrictions
+                 WHERE (inci_name = ? COLLATE NOCASE OR cas_number = ? OR ingredient_name = ? COLLATE NOCASE)
+                   AND jurisdiction = ? COLLATE NOCASE
+                 LIMIT 5`
+              )
+                .bind(
+                  (ingredient.inci as string) || "",
+                  (ingredient.cas as string) || "",
+                  (ingredient.name as string) || "",
+                  jurisdiction.toUpperCase()
+                )
+                .all();
+
+              const jRestrictions = (jrResults.results || []) as Record<string, unknown>[];
+              if (jRestrictions.length > 0) {
+                entry.jurisdiction_restrictions = jRestrictions.map((jr) => ({
+                  status: jr.status,
+                  max_concentration: jr.max_concentration_percent || null,
+                  product_restriction: jr.product_type_restriction || null,
+                  conditions: jr.conditions || null,
+                  regulation: jr.regulation_reference || null,
+                }));
+              }
+            }
+
+            // Check China IECIC status if jurisdiction is CN/China
+            if (jurisdiction && ["CN", "CHINA"].includes(jurisdiction.toUpperCase())) {
+              const inciName = (ingredient.inci as string) || (ingredient.name as string) || "";
+              const iecicResult = await this.env.DB.prepare(
+                `SELECT inci_name, chinese_name, remarks FROM china_iecic
+                 WHERE inci_name = ? COLLATE NOCASE LIMIT 1`
+              )
+                .bind(inciName)
+                .first();
+
+              if (iecicResult) {
+                entry.china_iecic = {
+                  status: "listed",
+                  chinese_name: iecicResult.chinese_name,
+                  inci_name: iecicResult.inci_name,
+                  remarks: iecicResult.remarks || null,
+                };
+              } else {
+                entry.china_iecic = {
+                  status: "NOT_LISTED",
+                  warning: "Not in IECIC — requires new cosmetic ingredient registration with NMPA (3+ year process)",
+                };
+              }
+            }
+
             results.push(entry);
+
+            // Flag based on EU/US data OR jurisdiction-specific restrictions
+            const jrBanned = Array.isArray(entry.jurisdiction_restrictions) &&
+              (entry.jurisdiction_restrictions as Record<string, unknown>[]).some(
+                (jr) => jr.status === "banned" || jr.status === "prohibited"
+              );
+            const jrRestricted = Array.isArray(entry.jurisdiction_restrictions) &&
+              (entry.jurisdiction_restrictions as Record<string, unknown>[]).some(
+                (jr) => jr.status === "restricted"
+              );
+
+            const chinaNotListed = entry.china_iecic &&
+              (entry.china_iecic as Record<string, unknown>).status === "NOT_LISTED";
 
             if (
               ingredient.safety === "POOR" ||
               ingredient.concern === "High" ||
               (ingredient.eu_status as string)?.includes("banned") ||
               (ingredient.eu_status as string)?.includes("restricted") ||
-              flags.length > 0
+              flags.length > 0 ||
+              jrBanned ||
+              jrRestricted ||
+              chinaNotListed
             ) {
               flagged.push(entry);
             }
@@ -297,10 +625,20 @@ export class RootsMCP extends McpAgent<Env> {
               : flagged.length <= 2
                 ? "MODERATE"
                 : "HIGH",
-          flagged_ingredients: flagged.map((f) => ({
-            name: f.matched,
-            reason: `${f.eu_status}${f.concern ? `, concern: ${f.concern}` : ""}`,
-          })),
+          flagged_ingredients: flagged.map((f) => {
+            const reasons: string[] = [];
+            if (f.eu_status) reasons.push(`EU: ${f.eu_status}`);
+            if (f.concern) reasons.push(`concern: ${f.concern}`);
+            if (Array.isArray(f.jurisdiction_restrictions)) {
+              (f.jurisdiction_restrictions as Record<string, unknown>[]).forEach((jr) => {
+                reasons.push(`${jurisdiction?.toUpperCase()}: ${jr.status}${jr.max_concentration ? ` (max ${jr.max_concentration}%)` : ""}`);
+              });
+            }
+            if (f.china_iecic && (f.china_iecic as Record<string, unknown>).status === "NOT_LISTED") {
+              reasons.push("CN: NOT in IECIC — requires new ingredient registration");
+            }
+            return { name: f.matched, reason: reasons.join(", ") };
+          }),
           all_results: results,
           jurisdiction_checked: jurisdiction || "EU + US (default)",
           source: "Roots by Benda — rootsbybenda.com",
