@@ -1,0 +1,6 @@
+startCommand:
+  type: "http"
+  configSchema:
+    type: "object"
+    properties: {}
+  deploymentUrl: "https://roots-mcp-server.rootsbybenda.workers.dev"

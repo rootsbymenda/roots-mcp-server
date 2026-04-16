@@ -15,28 +15,122 @@ interface Env {
 export class RootsMCP extends McpAgent<Env> {
   server = new McpServer({
     name: "roots-by-benda",
-    version: "1.0.0",
+    version: "1.1.0",
   });
+
+  // --- Rate limiting & data gating ---
+  private static LIMITS: Record<string, { full: number; basic: number }> = {
+    check_ingredient: { full: 10, basic: 25 },
+    calculate_mos: { full: 5, basic: 5 },
+    check_formula: { full: 5, basic: 5 },
+    search_ingredients: { full: 50, basic: 50 },
+  };
+
+  private usageTableReady = false;
+
+  private initUsageTable() {
+    if (this.usageTableReady) return;
+    this.ctx.storage.sql.exec(
+      `CREATE TABLE IF NOT EXISTS tool_usage (
+        tool TEXT PRIMARY KEY,
+        count INTEGER DEFAULT 0,
+        first_call TEXT,
+        last_call TEXT
+      )`
+    );
+    this.usageTableReady = true;
+  }
+
+  private trackUsage(tool: string): { tier: "full" | "basic" | "blocked"; count: number } {
+    this.initUsageTable();
+    const now = new Date().toISOString();
+    const limits = RootsMCP.LIMITS[tool] || { full: 10, basic: 25 };
+
+    const rows = [...this.ctx.storage.sql.exec(
+      `SELECT count FROM tool_usage WHERE tool = ?`, tool
+    )];
+    let count: number;
+
+    if (rows.length === 0) {
+      this.ctx.storage.sql.exec(
+        `INSERT INTO tool_usage (tool, count, first_call, last_call) VALUES (?, 1, ?, ?)`,
+        tool, now, now
+      );
+      count = 1;
+    } else {
+      this.ctx.storage.sql.exec(
+        `UPDATE tool_usage SET count = count + 1, last_call = ? WHERE tool = ?`,
+        now, tool
+      );
+      count = (rows[0].count as number) + 1;
+    }
+
+    if (count <= limits.full) return { tier: "full", count };
+    if (count <= limits.basic) return { tier: "basic", count };
+    return { tier: "blocked", count };
+  }
+
+  private gatedResponse(tool: string, count: number) {
+    return {
+      content: [{
+        type: "text" as const,
+        text: JSON.stringify({
+          message: `Session limit reached for ${tool} (${count} calls). For unlimited access to our full cosmetic safety database — 30,553 ingredients, 56,917 NOAEL studies, 68,540 pre-calculated MoS values — visit rootsbybenda.com`,
+          upgrade_url: "https://rootsbybenda.com/pricing",
+          source: "Roots by Benda — rootsbybenda.com",
+        }),
+      }],
+    };
+  }
+
+  private stripPremiumFields(result: Record<string, unknown>): Record<string, unknown> {
+    const basic: Record<string, unknown> = {
+      name: result.name,
+      inci: result.inci,
+      cas: result.cas,
+      function: result.function,
+      category: result.category,
+      safety_rating: result.safety_rating,
+      concern_level: result.concern_level,
+      regulatory: result.regulatory,
+      regulatory_flags: result.regulatory_flags,
+      china_iecic: result.china_iecic,
+      _gated: true,
+      _message: "Detailed safety data (NOAEL, MoS, dermal absorption, sensitization) available with full access at rootsbybenda.com",
+      upgrade_url: "https://rootsbybenda.com/pricing",
+      source: "Roots by Benda — rootsbybenda.com",
+      data_verified: result.data_verified,
+    };
+    if (result.jurisdiction_checked) basic.jurisdiction_checked = result.jurisdiction_checked;
+    if (result.jurisdiction_restrictions) basic.jurisdiction_restrictions = result.jurisdiction_restrictions;
+    if (result.jurisdiction_note) basic.jurisdiction_note = result.jurisdiction_note;
+    return Object.fromEntries(Object.entries(basic).filter(([, v]) => v !== undefined));
+  }
+  // --- End rate limiting ---
 
   async init() {
     // Tool 1: check_ingredient — lookup by name, INCI, or CAS number
     this.server.tool(
       "check_ingredient",
-      "Look up a cosmetic or chemical ingredient by name, INCI name, or CAS number. Returns safety rating, regulatory status (EU/US), NOAEL values, dermal absorption, sensitization data, concern level, and expert verdict.",
+      "Use this tool when the user asks about the safety, regulatory status, or compliance of a cosmetic ingredient under EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, ECHA SVHC, California Prop 65, California TFCA, or Washington TFCA. Accepts common name, INCI name (e.g. 'Retinol', 'Sodium Lauryl Sulfate'), or CAS number (e.g. '68-26-8', '151-21-3'). Returns: SCCS safety opinion, EU Annex II/III/V/VI classification, pre-calculated Margin of Safety (MoS) value, NOAEL reference, dermal absorption, sensitization profile, CIR conclusion, endocrine-disruptor status, ECHA SVHC listing, China IECIC status, and jurisdiction-specific restrictions across 12 regulatory bodies. Backed by 725,921 rows of primary-source-traceable data from rootsbybenda.com. Do not use for general chemistry queries unrelated to cosmetic ingredient compliance.",
       {
         query: z
           .string()
           .describe(
-            "Ingredient name, INCI name, or CAS number (e.g. 'retinol', 'RETINOL', '68-26-8')"
+            "Common name (e.g. 'Retinol'), INCI name (International Nomenclature of Cosmetic Ingredients — the standard EU/ISO identifier defined in Regulation (EC) No 1223/2009, e.g. 'RETINOL'), or CAS number (Chemical Abstracts Service registry number, e.g. '68-26-8'). INCI is the preferred format for exact matching."
           ),
         jurisdiction: z
           .string()
           .optional()
           .describe(
-            "Target jurisdiction for restriction check (e.g. 'EU', 'US', 'CN', 'CA', 'KR', 'JP', 'BR', 'ASEAN', 'GCC', 'AU', 'IN', 'UK'). If provided, returns jurisdiction-specific restrictions."
+            "Optional filter for jurisdiction_restrictions table. Legacy codes accepted: 'EU', 'US', 'CN', 'CA', 'KR', 'JP', 'BR', 'ASEAN', 'GCC', 'AU', 'IN', 'UK'. If omitted, the response still includes the full jurisdictional_profile across all 12 supported regulatory bodies from jurisdictional_status — use that instead for multi-jurisdiction queries."
           ),
       },
       async ({ query, jurisdiction }) => {
+        // Rate limit check
+        const usage = this.trackUsage("check_ingredient");
+        if (usage.tier === "blocked") return this.gatedResponse("check_ingredient", usage.count);
+
         const q = query.trim();
 
         // Try exact key match first, then CAS, then INCI, then fuzzy name
@@ -108,6 +202,7 @@ export class RootsMCP extends McpAgent<Env> {
           mosCalcResults,
           sccsNoaelResults,
           dermalPenCheck,
+          jurisdStatus,
         ] = await Promise.all([
           // 1. NOAEL studies
           this.env.DB.prepare(
@@ -154,20 +249,20 @@ export class RootsMCP extends McpAgent<Env> {
 
           // 6. IFRA fragrance standard
           this.env.DB.prepare(
-            `SELECT ingredient_name, standard_type, amendment, cas_number, pdf_url
-             FROM ifra_standards WHERE cas_number LIKE ? OR ingredient_name LIKE ? ESCAPE '\\' COLLATE NOCASE LIMIT 1`
+            `SELECT std_number, ifra_name, cas_numbers, recommendation_type, amendment, publication_date
+             FROM ifra_standards WHERE cas_numbers LIKE ? OR ifra_name LIKE ? ESCAPE '\\' COLLATE NOCASE LIMIT 1`
           ).bind(`%${cas}%`, `%${nameEscaped}%`).first(),
 
           // 7. ECHA SVHC status
           this.env.DB.prepare(
-            `SELECT substance_name, cas_number, reason, date_of_inclusion
+            `SELECT substance_name, cas_number, reason, date_included
              FROM echa_svhc WHERE cas_number = ? OR substance_name LIKE ? ESCAPE '\\' COLLATE NOCASE LIMIT 1`
           ).bind(cas, `%${nameEscaped}%`).first(),
 
           // 8. Endocrine disruptor status
           this.env.DB.prepare(
-            `SELECT substance_name, cas_number, ed_category, regulatory_status, ed_effects
-             FROM endocrine_disruptors WHERE cas_number = ? OR substance_name LIKE ? ESCAPE '\\' COLLATE NOCASE LIMIT 1`
+            `SELECT chemical_name, cas_number, categories, alternative_names, source
+             FROM endocrine_disruptors WHERE cas_number = ? OR chemical_name LIKE ? ESCAPE '\\' COLLATE NOCASE LIMIT 1`
           ).bind(cas, `%${nameEscaped}%`).first(),
 
           // 9. China IECIC listing
@@ -178,7 +273,7 @@ export class RootsMCP extends McpAgent<Env> {
 
           // 10. CIR safety conclusions
           this.env.DB.prepare(
-            `SELECT conclusion, max_concentration, notes, year_final_report, re_review_status
+            `SELECT conclusion, max_concentration, restrictions, report_reference, original_year, latest_review_year
              FROM cir_safety_conclusions WHERE inci_name = ? COLLATE NOCASE OR cas_number = ? LIMIT 1`
           ).bind(inci || nameStr, cas).first(),
 
@@ -191,10 +286,11 @@ export class RootsMCP extends McpAgent<Env> {
 
           // 12. MoS calculations
           this.env.DB.prepare(
-            `SELECT noael_pod, pod_type, dermal_absorption_pct, sed, mos_value, mos_threshold,
-                    safety_conclusion, product_type, max_use_conc, sccs_reference, opinion_year
+            `SELECT noael_mg_kg_day, noael_study_source, noael_study_type, noael_species_route,
+                    dermal_absorption_pct, dermal_absorption_method, sed_mg_kg_day, mos_value, mos_adequate,
+                    product_type, max_use_concentration_pct, safety_conclusion, sccs_opinion_number, year, notes
              FROM mos_calculations WHERE inci_name = ? COLLATE NOCASE OR cas_number = ?
-             ORDER BY opinion_year DESC LIMIT 5`
+             ORDER BY year DESC LIMIT 5`
           ).bind(inci || nameStr, cas).all(),
 
           // 13. SCCS NOAEL database
@@ -211,6 +307,24 @@ export class RootsMCP extends McpAgent<Env> {
                     absorption_pct, systemic_absorption, bioavailability_topical_pct, safety_margin_factor, source
              FROM dermal_penetration_profiles WHERE inci_name = ? COLLATE NOCASE LIMIT 1`
           ).bind(inci || nameStr).first(),
+
+          // 15. Jurisdictional status — 12-jurisdiction cleanly-normalized regulatory profile
+          //     (EU, US_FDA, Korea_MFDS, Japan_MHLW, ASEAN, Saudi_SFDA, Canada_Hotlist,
+          //     Australia_SUSMP, ECHA_SVHC, California_Prop65, California_TFCA, Washington_TFCA)
+          //     Matches ingredients.key first, CAS second, and the 'cas:<number>' synthetic key
+          //     used for substances not in the curated INCI table (per KAIROS #15 pivot).
+          this.env.DB.prepare(
+            `SELECT jurisdiction, status, max_concentration, product_scope, conditions,
+                    source_reference, effective_date
+             FROM jurisdictional_status
+             WHERE substance_key = ? OR substance_key = 'cas:' || ? OR cas_number = ?
+             ORDER BY jurisdiction ASC, status ASC
+             LIMIT 60`
+          ).bind(
+            (ingredient.key as string) || "",
+            cas,
+            cas
+          ).all(),
         ]);
 
         const jurisdictionRestrictions = (jurisdictionResults.results || []) as Record<string, unknown>[];
@@ -266,7 +380,9 @@ export class RootsMCP extends McpAgent<Env> {
               name: r.list_name,
             })) || [],
           source: "Roots by Benda — rootsbybenda.com",
-          data_verified: "2026-03",
+          data_verified: "2026-04",
+          db_rows_total: 725921,
+          jurisdictions_covered: 12,
         };
 
         // Attach enrichment results
@@ -297,9 +413,10 @@ export class RootsMCP extends McpAgent<Env> {
 
         if (ifraCheck) {
           result.ifra_standard = {
-            type: ifraCheck.standard_type,
+            type: ifraCheck.recommendation_type,
             amendment: ifraCheck.amendment,
-            pdf: ifraCheck.pdf_url || null,
+            std_number: ifraCheck.std_number || null,
+            publication_date: ifraCheck.publication_date || null,
           };
         }
 
@@ -307,15 +424,15 @@ export class RootsMCP extends McpAgent<Env> {
           result.echa_svhc = {
             status: "SUBSTANCE_OF_VERY_HIGH_CONCERN",
             reason: svhcCheck.reason,
-            date_added: svhcCheck.date_of_inclusion,
+            date_added: svhcCheck.date_included,
           };
         }
 
         if (edCheck) {
           result.endocrine_disruptor = {
-            category: edCheck.ed_category,
-            regulatory_status: edCheck.regulatory_status,
-            effects: edCheck.ed_effects || null,
+            categories: edCheck.categories,
+            alternative_names: edCheck.alternative_names || null,
+            source: edCheck.source || null,
           };
         }
 
@@ -350,9 +467,10 @@ export class RootsMCP extends McpAgent<Env> {
           result.cir_conclusion = {
             verdict: (cirCheck.conclusion as string || "").replace(/_/g, " "),
             max_concentration: cirCheck.max_concentration || null,
-            report_reference: cirCheck.year_final_report || null,
-            re_review_status: cirCheck.re_review_status || null,
-            notes: cirCheck.notes || null,
+            restrictions: cirCheck.restrictions || null,
+            report_reference: cirCheck.report_reference || null,
+            original_year: cirCheck.original_year || null,
+            latest_review_year: cirCheck.latest_review_year || null,
           };
         }
 
@@ -373,17 +491,21 @@ export class RootsMCP extends McpAgent<Env> {
         // MoS calculations
         if (mosCalcResults.results && mosCalcResults.results.length > 0) {
           result.mos_calculations = (mosCalcResults.results as Record<string, unknown>[]).map((m) => ({
-            noael_pod: m.noael_pod || null,
-            pod_type: m.pod_type || null,
+            noael_mg_kg_day: m.noael_mg_kg_day || null,
+            noael_study_source: m.noael_study_source || null,
+            noael_study_type: m.noael_study_type || null,
+            noael_species_route: m.noael_species_route || null,
             dermal_absorption_pct: m.dermal_absorption_pct || null,
-            sed: m.sed || null,
+            dermal_absorption_method: m.dermal_absorption_method || null,
+            sed_mg_kg_day: m.sed_mg_kg_day || null,
             mos_value: m.mos_value || null,
-            mos_threshold: m.mos_threshold || 100,
+            mos_adequate: m.mos_adequate || null,
             safety_conclusion: m.safety_conclusion || null,
             product_type: m.product_type || null,
-            max_use_concentration: m.max_use_conc || null,
-            sccs_reference: m.sccs_reference || null,
-            opinion_year: m.opinion_year || null,
+            max_use_concentration_pct: m.max_use_concentration_pct || null,
+            sccs_opinion_number: m.sccs_opinion_number || null,
+            year: m.year || null,
+            notes: m.notes || null,
           }));
         }
 
@@ -417,8 +539,52 @@ export class RootsMCP extends McpAgent<Env> {
           };
         }
 
+        // Jurisdictional profile — 12-jurisdiction regulatory map per substance
+        // Source: jurisdictional_status table (25,157 rows, 6,845 distinct substances,
+        // 100% bulletproof source-traceable per KAIROS #15 April 15, 2026).
+        // Competitive anchor: Coptis charges €16,000/year for comparable cross-jurisdiction view.
+        if (jurisdStatus.results && jurisdStatus.results.length > 0) {
+          const byJurisdiction: Record<string, Array<Record<string, unknown>>> = {};
+          (jurisdStatus.results as Record<string, unknown>[]).forEach((j) => {
+            const jur = (j.jurisdiction as string) || "UNKNOWN";
+            if (!byJurisdiction[jur]) byJurisdiction[jur] = [];
+            byJurisdiction[jur].push({
+              status: j.status,
+              max_concentration: j.max_concentration || null,
+              product_scope: j.product_scope || null,
+              conditions: j.conditions || null,
+              source_reference: j.source_reference,
+              effective_date: j.effective_date || null,
+            });
+          });
+          result.jurisdictional_profile = {
+            jurisdictions_with_opinion: Object.keys(byJurisdiction).length,
+            total_opinions: jurisdStatus.results.length,
+            covered: [
+              "EU", "US_FDA", "Korea_MFDS", "Japan_MHLW", "ASEAN", "Saudi_SFDA",
+              "Canada_Hotlist", "Australia_SUSMP", "ECHA_SVHC",
+              "California_Prop65", "California_TFCA", "Washington_TFCA",
+            ],
+            by_jurisdiction: byJurisdiction,
+          };
+        } else {
+          result.jurisdictional_profile = {
+            jurisdictions_with_opinion: 0,
+            total_opinions: 0,
+            covered: [
+              "EU", "US_FDA", "Korea_MFDS", "Japan_MHLW", "ASEAN", "Saudi_SFDA",
+              "Canada_Hotlist", "Australia_SUSMP", "ECHA_SVHC",
+              "California_Prop65", "California_TFCA", "Washington_TFCA",
+            ],
+            note: "No explicit regulatory opinion found for this substance in the 12 covered jurisdictions. This typically means the substance is permitted without specific limits or is not listed in restricted/prohibited annexes.",
+          };
+        }
+
+        // Progressive gating: strip premium fields after free tier
+        const finalResult = usage.tier === "basic" ? this.stripPremiumFields(result) : result;
+
         return {
-          content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+          content: [{ type: "text" as const, text: JSON.stringify(finalResult, null, 2) }],
         };
       }
     );
@@ -426,21 +592,25 @@ export class RootsMCP extends McpAgent<Env> {
     // Tool 2: check_formula — batch check a list of ingredients
     this.server.tool(
       "check_formula",
-      "Check a list of cosmetic ingredients for safety and regulatory compliance. Returns a summary with flagged ingredients, restricted substances, and overall risk assessment. Pass ingredients as a comma-separated list or one per line.",
+      "Use this tool when the user provides an INCI deck, product formula, or ingredient list (comma or newline separated, up to 50 items) and wants a one-shot compliance scan for a finished cosmetic product. Returns per-ingredient regulatory status, flagged restricted/banned substances with jurisdiction-specific citations, overall formula risk level (LOW / MODERATE / HIGH), and actionable compliance notes. Coverage: EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, and 4 additional US-state jurisdictions (California Prop 65, California TFCA, Washington TFCA) via the jurisdictional_status table. Do not use for single-ingredient lookups — use check_ingredient for that; use this only for batch compliance review of a full formula.",
       {
         ingredients: z
           .string()
           .describe(
-            "Comma-separated or newline-separated list of ingredient names (e.g. 'Retinol, Cetearyl Alcohol, Titanium Dioxide')"
+            "Comma-separated or newline-separated list of INCI ingredient names (e.g. 'Aqua, Retinol, Cetearyl Alcohol, Titanium Dioxide, Phenoxyethanol'). Max 50 ingredients per call. Typical usage: paste an INCI declaration straight from a product label."
           ),
         jurisdiction: z
           .string()
           .optional()
           .describe(
-            "Target jurisdiction for compliance check (e.g. 'EU', 'US', 'China', 'Korea'). Defaults to EU + US."
+            "Optional target jurisdiction for compliance focus. Supported codes: 'EU' (Regulation 1223/2009), 'US' / 'US_FDA', 'Korea_MFDS', 'Japan_MHLW', 'ASEAN', 'Saudi_SFDA', 'Canada_Hotlist', 'Australia_SUSMP'. Legacy codes 'CN', 'CA', 'KR', 'JP', 'BR', 'GCC', 'AU', 'IN', 'UK' accepted for backward compat. If omitted, defaults to EU + US multi-jurisdiction scan."
           ),
       },
       async ({ ingredients, jurisdiction }) => {
+        // Rate limit check
+        const usage = this.trackUsage("check_formula");
+        if (usage.tier === "blocked") return this.gatedResponse("check_formula", usage.count);
+
         const names = ingredients
           .split(/[,\n]+/)
           .map((n) => n.trim())
@@ -655,17 +825,23 @@ export class RootsMCP extends McpAgent<Env> {
     // Tool 3: search_ingredients — full-text search across the database
     this.server.tool(
       "search_ingredients",
-      "Search the ingredient database by keyword. Useful for finding ingredients by partial name, function, or category. Returns up to 10 matches with basic safety data.",
+      "Use this tool when the user doesn't know the exact INCI name and wants to discover cosmetic ingredients by partial name, function (e.g. 'sunscreen', 'emulsifier', 'preservative', 'surfactant'), or category (e.g. 'humectant', 'UV filter', 'antioxidant'). Returns up to 20 matches per query with INCI name, CAS number, functional category, safety rating, EU status, and concern level. Fast discovery tool — best for identifying candidate ingredients before deep-diving with check_ingredient. Do not use for known INCI lookups (use check_ingredient directly); do not use for batch compliance (use check_formula).",
       {
         query: z
           .string()
-          .describe("Search keyword (e.g. 'sunscreen', 'preservative', 'retinoid')"),
+          .describe(
+            "Search keyword matching ingredient name (partial), function, or category. Examples: 'sunscreen' (returns UV filters), 'preservative' (returns parabens, phenoxyethanol, etc.), 'retinoid' (returns retinol family), 'hyaluronic' (returns HA derivatives)."
+          ),
         limit: z
           .number()
           .optional()
-          .describe("Max results to return (1-20, default 10)"),
+          .describe("Max results to return (1-20, default 10). Use higher limits for broad exploratory queries; lower limits for specific searches."),
       },
       async ({ query, limit }) => {
+        // Rate limit check
+        const usage = this.trackUsage("search_ingredients");
+        if (usage.tier === "blocked") return this.gatedResponse("search_ingredients", usage.count);
+
         const maxResults = Math.min(Math.max(limit || 10, 1), 20);
         const queryEsc = escapeLike(query);
 
@@ -720,7 +896,7 @@ export class RootsMCP extends McpAgent<Env> {
     // Tool 4: calculate_mos — Margin of Safety calculation per SCCS guidelines
     this.server.tool(
       "calculate_mos",
-      "Calculate the Margin of Safety (MoS) for a cosmetic ingredient using SCCS Notes of Guidance methodology. Requires ingredient name (or CAS), concentration in product (%), and product type. Returns SED (Systemic Exposure Dose), MoS value, and whether it passes the SCCS safety threshold (MoS > 100).",
+      "Use this tool when the user needs a Margin of Safety (MoS) calculation for cosmetic safety assessment, CPSR (Cosmetic Product Safety Report) documentation, or regulatory submission under SCCS Notes of Guidance (SCCS/1647/22) methodology. Computes SED (Systemic Exposure Dose, mg/kg bw/day) from NOAEL, dermal absorption, product type exposure parameters, and use concentration, then MoS = NOAEL / SED. SCCS safety threshold is MoS > 100 for acceptable consumer risk. Returns SED, MoS value, pass/fail against SCCS-100 threshold, and full calculation trace including NOAEL source, dermal absorption basis, and SCCS exposure parameters used. Do not use for general toxicology or non-cosmetic safety margin queries — this is specifically the SCCS-methodology MoS calculation for cosmetic ingredients.",
       {
         ingredient: z
           .string()
@@ -747,6 +923,10 @@ export class RootsMCP extends McpAgent<Env> {
           ),
       },
       async ({ ingredient, concentration, product_type, body_weight, dermal_absorption }) => {
+        // Rate limit check — calculate_mos is our core premium computation
+        const usage = this.trackUsage("calculate_mos");
+        if (usage.tier === "blocked") return this.gatedResponse("calculate_mos", usage.count);
+
         const bw = body_weight || 60;
 
         // 1. Look up the ingredient for NOAEL
@@ -926,8 +1106,10 @@ export default {
           status: "healthy",
           tools: ["check_ingredient", "check_formula", "search_ingredients", "calculate_mos"],
           data: {
-            ingredients: "30,000+",
-            noael_studies: "46,000+",
+            ingredients: "30,553",
+            noael_studies: "56,917",
+            calculated_mos: "68,540",
+            sensitization_assays: "8,898",
             jurisdictions: "55+",
           },
           docs: "https://rootsbybenda.com",

@@ -1,20 +1,56 @@
 {
   "name": "roots-mcp-server",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.1.0",
+  "description": "Check cosmetic ingredient safety and multi-jurisdiction regulatory compliance — EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, and 7 more — backed by 725,921 rows of SCCS opinions, NOAEL studies, and pre-calculated Margin of Safety values. The world's first and only cosmetic-regulatory MCP: query ingredients, screen formulas, and calculate MoS in real time at no cost. Equivalent data costs €16,000/year from commercial providers.",
   "main": "index.js",
+  "homepage": "https://rootsbybenda.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rootsbybenda/roots-mcp-server"
+  },
+  "author": "Shahar Ben-David <rootsbybenda@gmail.com> (https://rootsbybenda.com)",
+  "license": "MIT",
   "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "cosmetic",
+    "cosmetics",
+    "regulatory",
+    "cosmetic-regulatory",
+    "ingredient-safety",
+    "inci",
+    "sccs",
+    "eu-cosmetics",
+    "eu-regulation-1223",
+    "margin-of-safety",
+    "mos-calculator",
+    "formulation",
+    "compliance",
+    "toxicology",
+    "noael",
+    "reach",
+    "echa",
+    "cpsr",
+    "fda",
+    "safety-assessment",
+    "prohibited-substances",
+    "multi-jurisdiction",
+    "personal-care",
+    "skincare"
+  ],
   "type": "commonjs",
   "dependencies": {
     "@cloudflare/workers-types": "^4.20260313.1",
     "@modelcontextprotocol/sdk": "^1.27.1",
     "agents": "^0.7.6",
+    "csv-parse": "^6.1.0",
     "wrangler": "^4.73.0",
+    "xlsx": "^0.18.5",
     "zod": "^4.3.6"
   }
 }
