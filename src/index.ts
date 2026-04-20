@@ -1103,7 +1103,7 @@ export default {
       return new Response(
         JSON.stringify({
           name: "Roots by Benda MCP Server",
-          version: "1.0.0",
+          version: "1.1.3",
           status: "healthy",
           tools: ["check_ingredient", "check_formula", "search_ingredients", "calculate_mos"],
           data: {
