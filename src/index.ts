@@ -15,7 +15,7 @@ interface Env {
 export class RootsMCP extends McpAgent<Env> {
   server = new McpServer({
     name: "roots-by-benda",
-    version: "1.1.2",
+    version: "1.1.3",
   });
 
   // --- Rate limiting & data gating ---
@@ -75,7 +75,7 @@ export class RootsMCP extends McpAgent<Env> {
       content: [{
         type: "text" as const,
         text: JSON.stringify({
-          message: `Session limit reached for ${tool} (${count} calls). For unlimited access to our full cosmetic safety database — 30,553 ingredients, 174,973 NOAEL study records, 101,085 pre-calculated MoS values — visit rootsbybenda.com`,
+          message: `Session limit reached for ${tool} (${count} calls). For unlimited access to our full cosmetic safety database — 30,553 ingredients, 174,973 NOAEL study records, 99,535 pre-calculated MoS values — visit rootsbybenda.com`,
           upgrade_url: "https://rootsbybenda.com/pricing",
           source: "Roots by Benda — rootsbybenda.com",
         }),
@@ -112,7 +112,7 @@ export class RootsMCP extends McpAgent<Env> {
     // Tool 1: check_ingredient — lookup by name, INCI, or CAS number
     this.server.tool(
       "check_ingredient",
-      "Use this tool when the user asks about the safety, regulatory status, or compliance of a cosmetic ingredient under EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, ECHA SVHC, California Prop 65, California TFCA, or Washington TFCA. Accepts common name, INCI name (e.g. 'Retinol', 'Sodium Lauryl Sulfate'), or CAS number (e.g. '68-26-8', '151-21-3'). Returns: SCCS safety opinion, EU Annex II/III/V/VI classification, pre-calculated Margin of Safety (MoS) value, NOAEL reference, dermal absorption, sensitization profile, CIR conclusion, endocrine-disruptor status, ECHA SVHC listing, China IECIC status, and jurisdiction-specific restrictions across 12 regulatory bodies. Backed by 885,895 rows of primary-source-traceable data from rootsbybenda.com. Do not use for general chemistry queries unrelated to cosmetic ingredient compliance.",
+      "Use this tool when the user asks about the safety, regulatory status, or compliance of a cosmetic ingredient under EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, ECHA SVHC, California Prop 65, California TFCA, or Washington TFCA. Accepts common name, INCI name (e.g. 'Retinol', 'Sodium Lauryl Sulfate'), or CAS number (e.g. '68-26-8', '151-21-3'). Returns: SCCS safety opinion, EU Annex II/III/V/VI classification, pre-calculated Margin of Safety (MoS) value, NOAEL reference, dermal absorption, sensitization profile, CIR conclusion, endocrine-disruptor status, ECHA SVHC listing, China IECIC status, and jurisdiction-specific restrictions across 12 regulatory bodies. Backed by 884,345 rows of primary-source-traceable data from rootsbybenda.com. Do not use for general chemistry queries unrelated to cosmetic ingredient compliance.",
       {
         query: z
           .string()
@@ -381,7 +381,7 @@ export class RootsMCP extends McpAgent<Env> {
             })) || [],
           source: "Roots by Benda — rootsbybenda.com",
           data_verified: "2026-04",
-          db_rows_total: 885895,
+          db_rows_total: 884345,
           jurisdictions_covered: 12,
         };
 
@@ -1109,7 +1109,7 @@ export default {
           data: {
             ingredients: "30,553",
             noael_studies: "174,973",
-            calculated_mos: "101,085",
+            calculated_mos: "99,535",
             sensitization_assays: "8,898",
             jurisdictions: "55+",
           },

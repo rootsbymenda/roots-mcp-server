@@ -1,7 +1,7 @@
 {
   "name": "roots-mcp-server",
-  "version": "1.1.2",
-  "description": "Check cosmetic ingredient safety and multi-jurisdiction regulatory compliance — EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, and 7 more — backed by 885,895 rows of SCCS opinions, NOAEL studies, and pre-calculated Margin of Safety values. The world's first and only cosmetic-regulatory MCP: query ingredients, screen formulas, and calculate MoS in real time at no cost. Equivalent data costs €16,000/year from commercial providers.",
+  "version": "1.1.3",
+  "description": "Check cosmetic ingredient safety and multi-jurisdiction regulatory compliance — EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, and 7 more — backed by 884,345 rows of SCCS opinions, NOAEL studies, and pre-calculated Margin of Safety values. The world's first and only cosmetic-regulatory MCP: query ingredients, screen formulas, and calculate MoS in real time at no cost. Equivalent data costs €16,000/year from commercial providers.",
   "main": "index.js",
   "homepage": "https://rootsbybenda.com",
   "repository": {

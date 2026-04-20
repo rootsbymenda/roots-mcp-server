@@ -1,6 +1,6 @@
 # Roots by Benda — Cosmetic Regulatory Intelligence MCP Server
 
-**The world's first cosmetic-regulatory MCP.** Check cosmetic ingredient safety and multi-jurisdiction compliance — EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, ECHA SVHC, California Prop 65, California TFCA, Washington TFCA — backed by 885,895 rows of SCCS opinions, NOAEL studies, CIR conclusions, and pre-calculated Margin of Safety values.
+**The world's first cosmetic-regulatory MCP.** Check cosmetic ingredient safety and multi-jurisdiction compliance — EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, ECHA SVHC, California Prop 65, California TFCA, Washington TFCA — backed by 884,345 rows of SCCS opinions, NOAEL studies, CIR conclusions, and pre-calculated Margin of Safety values.
 
 Equivalent data licensed from commercial providers (Coptis, CosmEthics) runs €16,000/year. This MCP is free.
 
@@ -52,7 +52,7 @@ ingredient: "retinol", concentration: 0.3, product_type: "face cream"
 |---------|---------|
 | Ingredients (curated INCI) | 30,553 |
 | NOAEL study records (EPA ToxRefDB, ChemIDplus, EPA-ECOTOX, EPA-IRIS, GESTIS-DNEL, EFSA, Cal-OEHHA, Health Canada) | 174,973 |
-| Pre-calculated MoS values (SCCS methodology, 20 product categories) | 101,085 |
+| Pre-calculated MoS values (SCCS methodology, 20 product categories) | 99,535 |
 | Sensitization assays | 8,898 |
 | Dermal absorption profiles | 860 |
 | GHS classifications (PubChem) | 468,165 |
@@ -60,7 +60,7 @@ ingredient: "retinol", concentration: 0.3, product_type: "face cream"
 | CIR safety conclusions | 5,267 |
 | Multi-jurisdiction regulatory opinions (12 jurisdictions) | **15,925** |
 | Distinct substances with multi-jurisdiction profile | 6,917 |
-| **TOTAL** | **885,895** |
+| **TOTAL** | **884,345** |
 
 **100% source-traceability:** every row has a `src_local_path` pointing at a specific primary-source file on disk and a `src_verification_status` in the verified set. No QSAR predictions, no unsourced aggregates.
 
@@ -107,7 +107,7 @@ Unlimited access with full 12-jurisdiction profiles, PDF reports, and 22-tool we
 ## Built With
 
 - [Cloudflare Workers](https://workers.cloudflare.com/) + [Agents SDK](https://developers.cloudflare.com/agents/)
-- [Cloudflare D1](https://developers.cloudflare.com/d1/) (SQLite at the edge, 885,895 rows)
+- [Cloudflare D1](https://developers.cloudflare.com/d1/) (SQLite at the edge, 884,345 rows)
 - [Durable Objects](https://developers.cloudflare.com/durable-objects/) (session-scoped rate limiting)
 - [Model Context Protocol](https://modelcontextprotocol.io/) (MCP)
 
