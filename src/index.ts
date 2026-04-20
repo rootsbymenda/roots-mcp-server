@@ -15,7 +15,7 @@ interface Env {
 export class RootsMCP extends McpAgent<Env> {
   server = new McpServer({
     name: "roots-by-benda",
-    version: "1.1.0",
+    version: "1.1.2",
   });
 
   // --- Rate limiting & data gating ---
@@ -75,7 +75,7 @@ export class RootsMCP extends McpAgent<Env> {
       content: [{
         type: "text" as const,
         text: JSON.stringify({
-          message: `Session limit reached for ${tool} (${count} calls). For unlimited access to our full cosmetic safety database — 30,553 ingredients, 56,917 NOAEL studies, 68,540 pre-calculated MoS values — visit rootsbybenda.com`,
+          message: `Session limit reached for ${tool} (${count} calls). For unlimited access to our full cosmetic safety database — 30,553 ingredients, 174,973 NOAEL study records, 101,085 pre-calculated MoS values — visit rootsbybenda.com`,
           upgrade_url: "https://rootsbybenda.com/pricing",
           source: "Roots by Benda — rootsbybenda.com",
         }),
@@ -112,7 +112,7 @@ export class RootsMCP extends McpAgent<Env> {
     // Tool 1: check_ingredient — lookup by name, INCI, or CAS number
     this.server.tool(
       "check_ingredient",
-      "Use this tool when the user asks about the safety, regulatory status, or compliance of a cosmetic ingredient under EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, ECHA SVHC, California Prop 65, California TFCA, or Washington TFCA. Accepts common name, INCI name (e.g. 'Retinol', 'Sodium Lauryl Sulfate'), or CAS number (e.g. '68-26-8', '151-21-3'). Returns: SCCS safety opinion, EU Annex II/III/V/VI classification, pre-calculated Margin of Safety (MoS) value, NOAEL reference, dermal absorption, sensitization profile, CIR conclusion, endocrine-disruptor status, ECHA SVHC listing, China IECIC status, and jurisdiction-specific restrictions across 12 regulatory bodies. Backed by 725,921 rows of primary-source-traceable data from rootsbybenda.com. Do not use for general chemistry queries unrelated to cosmetic ingredient compliance.",
+      "Use this tool when the user asks about the safety, regulatory status, or compliance of a cosmetic ingredient under EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, ECHA SVHC, California Prop 65, California TFCA, or Washington TFCA. Accepts common name, INCI name (e.g. 'Retinol', 'Sodium Lauryl Sulfate'), or CAS number (e.g. '68-26-8', '151-21-3'). Returns: SCCS safety opinion, EU Annex II/III/V/VI classification, pre-calculated Margin of Safety (MoS) value, NOAEL reference, dermal absorption, sensitization profile, CIR conclusion, endocrine-disruptor status, ECHA SVHC listing, China IECIC status, and jurisdiction-specific restrictions across 12 regulatory bodies. Backed by 885,895 rows of primary-source-traceable data from rootsbybenda.com. Do not use for general chemistry queries unrelated to cosmetic ingredient compliance.",
       {
         query: z
           .string()
@@ -381,7 +381,7 @@ export class RootsMCP extends McpAgent<Env> {
             })) || [],
           source: "Roots by Benda — rootsbybenda.com",
           data_verified: "2026-04",
-          db_rows_total: 725921,
+          db_rows_total: 885895,
           jurisdictions_covered: 12,
         };
 
@@ -540,8 +540,9 @@ export class RootsMCP extends McpAgent<Env> {
         }
 
         // Jurisdictional profile — 12-jurisdiction regulatory map per substance
-        // Source: jurisdictional_status table (25,157 rows, 6,845 distinct substances,
-        // 100% bulletproof source-traceable per KAIROS #15 April 15, 2026).
+        // Source: jurisdictional_status table (15,925 rows, 6,917 distinct substances,
+        // 100% source-traceable; row count reflects KAIROS #18 Apr 16-17 2026 compound-CAS
+        // normalization dedup — distinct-substance coverage IMPROVED from 6,845 → 6,917).
         // Competitive anchor: Coptis charges €16,000/year for comparable cross-jurisdiction view.
         if (jurisdStatus.results && jurisdStatus.results.length > 0) {
           const byJurisdiction: Record<string, Array<Record<string, unknown>>> = {};
@@ -1107,8 +1108,8 @@ export default {
           tools: ["check_ingredient", "check_formula", "search_ingredients", "calculate_mos"],
           data: {
             ingredients: "30,553",
-            noael_studies: "56,917",
-            calculated_mos: "68,540",
+            noael_studies: "174,973",
+            calculated_mos: "101,085",
             sensitization_assays: "8,898",
             jurisdictions: "55+",
           },

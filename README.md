@@ -1,6 +1,6 @@
 # Roots by Benda — Cosmetic Regulatory Intelligence MCP Server
 
-**The world's first cosmetic-regulatory MCP.** Check cosmetic ingredient safety and multi-jurisdiction compliance — EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, ECHA SVHC, California Prop 65, California TFCA, Washington TFCA — backed by 725,921 rows of SCCS opinions, NOAEL studies, CIR conclusions, and pre-calculated Margin of Safety values.
+**The world's first cosmetic-regulatory MCP.** Check cosmetic ingredient safety and multi-jurisdiction compliance — EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, ECHA SVHC, California Prop 65, California TFCA, Washington TFCA — backed by 885,895 rows of SCCS opinions, NOAEL studies, CIR conclusions, and pre-calculated Margin of Safety values.
 
 Equivalent data licensed from commercial providers (Coptis, CosmEthics) runs €16,000/year. This MCP is free.
 
@@ -51,16 +51,16 @@ ingredient: "retinol", concentration: 0.3, product_type: "face cream"
 | Dataset | Records |
 |---------|---------|
 | Ingredients (curated INCI) | 30,553 |
-| NOAEL studies (REACH, SCCS, CIR, EFSA, ToxValDB) | 38,411 |
-| Pre-calculated MoS values (SCCS methodology, 20 product categories) | 68,540 |
+| NOAEL study records (EPA ToxRefDB, ChemIDplus, EPA-ECOTOX, EPA-IRIS, GESTIS-DNEL, EFSA, Cal-OEHHA, Health Canada) | 174,973 |
+| Pre-calculated MoS values (SCCS methodology, 20 product categories) | 101,085 |
 | Sensitization assays | 8,898 |
 | Dermal absorption profiles | 860 |
 | GHS classifications (PubChem) | 468,165 |
 | Substance identifiers (INCI ↔ CAS ↔ EC ↔ CID crosswalk) | 73,252 |
 | CIR safety conclusions | 5,267 |
-| Multi-jurisdiction regulatory opinions (12 jurisdictions) | **25,157** |
-| Distinct substances with multi-jurisdiction profile | 6,845 |
-| **TOTAL** | **725,921** |
+| Multi-jurisdiction regulatory opinions (12 jurisdictions) | **15,925** |
+| Distinct substances with multi-jurisdiction profile | 6,917 |
+| **TOTAL** | **885,895** |
 
 **100% source-traceability:** every row has a `src_local_path` pointing at a specific primary-source file on disk and a `src_verification_status` in the verified set. No QSAR predictions, no unsourced aggregates.
 
@@ -107,7 +107,7 @@ Unlimited access with full 12-jurisdiction profiles, PDF reports, and 22-tool we
 ## Built With
 
 - [Cloudflare Workers](https://workers.cloudflare.com/) + [Agents SDK](https://developers.cloudflare.com/agents/)
-- [Cloudflare D1](https://developers.cloudflare.com/d1/) (SQLite at the edge, 725,921 rows)
+- [Cloudflare D1](https://developers.cloudflare.com/d1/) (SQLite at the edge, 885,895 rows)
 - [Durable Objects](https://developers.cloudflare.com/durable-objects/) (session-scoped rate limiting)
 - [Model Context Protocol](https://modelcontextprotocol.io/) (MCP)
 
