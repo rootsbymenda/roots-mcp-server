@@ -205,10 +205,16 @@ export class RootsMCP extends McpAgent<Env> {
           jurisdStatus,
         ] = await Promise.all([
           // 1. NOAEL studies
+          // KAIROS #33 TD#49: filter endpoint_type='NOAEL' + clean unit + no inequality qualifier
+          // so MCP consumers (Claude agents, downstream tools) never receive
+          // LD50/LC50/LOAEL values labeled as NOAEL in the tool response.
           this.env.DB.prepare(
             `SELECT endpoint_type, value, qualifier, unit, study_type, route, duration, species, source, reference
              FROM noael_studies
-             WHERE substance_name = ? COLLATE NOCASE OR cas_number = ?
+             WHERE (substance_name = ? COLLATE NOCASE OR cas_number = ?)
+               AND UPPER(endpoint_type) = 'NOAEL'
+               AND (qualifier IS NULL OR qualifier = '' OR qualifier = '=')
+               AND unit LIKE '%mg/kg%'
              LIMIT 10`
           ).bind(nameStr, cas).all(),
 
@@ -943,10 +949,16 @@ export class RootsMCP extends McpAgent<Env> {
           .first();
 
         // Also check noael_studies for the best NOAEL
+        // KAIROS #33 TD#49: must filter endpoint_type='NOAEL' — picking MIN(value) ASC
+        // without filter returns LD50s at the bottom of the distribution (low values
+        // = scary lethality data) which would then feed MoS calculations as if NOAEL.
         const noaelStudy = await this.env.DB.prepare(
           `SELECT substance_name, value, species, route, duration, study_type, source
            FROM noael_studies
            WHERE substance_name LIKE ? ESCAPE '\\' COLLATE NOCASE
+             AND UPPER(endpoint_type) = 'NOAEL'
+             AND (qualifier IS NULL OR qualifier = '' OR qualifier = '=')
+             AND unit LIKE '%mg/kg%'
            ORDER BY CASE WHEN route LIKE '%dermal%' THEN 0 WHEN route LIKE '%oral%' THEN 1 ELSE 2 END,
                     CAST(value AS REAL) ASC
            LIMIT 1`
