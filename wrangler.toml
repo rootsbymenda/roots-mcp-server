@@ -3,6 +3,20 @@ main = "src/index.ts"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
+# KAIROS #41 auth: required env for HARD RULE #2 tier gating.
+# Without these, every caller is treated as free tier (under-grant by design).
+#
+# Required secrets — set via `wrangler secret put <NAME>`:
+#   MCP_KEY_SECRET            — same value as rootsbybenda-site MCP_KEY_SECRET (32+ random bytes)
+#   SUPABASE_SERVICE_ROLE_KEY — same value rootsbybenda-site uses for profile.plan lookups
+#
+# Required var — add to `[vars]` below OR set via `wrangler secret put`:
+#   SUPABASE_URL — e.g. https://<project>.supabase.co (same as rootsbybenda-site)
+#
+# Example (uncomment + fill once URL is confirmed):
+# [vars]
+# SUPABASE_URL = "https://<project>.supabase.co"
+
 [durable_objects]
 bindings = [{ name = "MCP_OBJECT", class_name = "RootsMCP" }]
 
