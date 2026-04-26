@@ -67,10 +67,10 @@ Free vs. paid tier enforcement happens server-side via Supabase `profiles.plan` 
 
 This repository is **public-by-design**. Source code visibility serves as the audit trail for technical buyers (CPSR safety assessors, regulatory consultants, formulators) who professionally evaluate compliance tooling. The data is private; the gating logic is public; the cryptographic discipline is public — that is the moat.
 
-This decision was made consciously after Perplexity Deep Research evaluation of industry patterns, Smithery scoring impact, MCP community norms, security tradeoffs, and brand-positioning evidence. The full decision rationale is recorded internally; the externally-visible artifact is this repo and its hygiene.
+This decision was made consciously after structured evaluation of industry patterns, Smithery scoring impact, MCP community norms, security tradeoffs, and brand-positioning evidence. The full decision rationale is recorded internally; the externally-visible artifact is this repo and its hygiene.
 
 ---
 
 ## License
 
-See `LICENSE` file in this repository (or `package.json` `license` field). Default for Roots by Benda MCP servers: MIT.
+See `LICENSE` file in this repository (or `package.json` `license` field). MIT.
