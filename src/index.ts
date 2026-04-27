@@ -1293,7 +1293,8 @@ export default {
       );
     }
 
-    // SEP-1649 server-card discovery (authentication.required: true — premium content)
+    // SEP-1649 server-card discovery — authentication optional (free tier supported, bearer for Pro);
+    // tools listed statically so SmitheryBot can enumerate without auth (gating happens at tool RESPONSE level).
     if (url.pathname === "/.well-known/mcp/server-card.json") {
       return Response.json({
         "$schema": "https://static.modelcontextprotocol.io/schemas/mcp-server-card/v1.json",
@@ -1305,8 +1306,8 @@ export default {
         "documentationUrl": "https://rootsbybenda.com",
         "transport": { "type": "streamable-http", "endpoint": "/mcp" },
         "capabilities": { "tools": { "listChanged": true }, "resources": { "subscribe": false, "listChanged": false } },
-        "authentication": { "required": true, "schemes": ["bearer"] },
-        "tools": ["dynamic"]
+        "authentication": { "required": false, "schemes": ["bearer"] },
+        "tools": ["check_ingredient", "check_formula", "search_ingredients", "calculate_mos"]
       }, { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300" } });
     }
 
