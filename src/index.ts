@@ -1270,6 +1270,17 @@ export default {
   ): Promise<Response> {
     const url = new URL(request.url);
 
+    // SEP-1649: some MCP clients POST initialize to root; route them to streamable HTTP.
+    // Rewrite URL pathname to /mcp so RootsMCP.serve("/mcp") matches the route.
+    if (request.method === "POST" && url.pathname === "/") {
+      const auth = await resolveAuth(request, env);
+      (ctx as ExecutionContext & { props?: AuthProps }).props = auth;
+      const mcpUrl = new URL(request.url);
+      mcpUrl.pathname = "/mcp";
+      const mcpRequest = new Request(mcpUrl.toString(), request);
+      return RootsMCP.serve("/mcp").fetch(mcpRequest, env, ctx);
+    }
+
     // Health check
     if (url.pathname === "/" || url.pathname === "/health") {
       return new Response(
