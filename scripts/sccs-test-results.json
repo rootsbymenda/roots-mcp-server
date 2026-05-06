@@ -1,0 +1,164 @@
+[
+  {
+    "file": "sccs_o_266_0.pdf",
+    "source": "sccs",
+    "ingredient_name": "the safety of aluminium in cosmetic products",
+    "cas_numbers": [],
+    "noael_values": [
+      {
+        "value": 30.0,
+        "unit": "mg/kg bw/day",
+        "route": "dermal"
+      },
+      {
+        "value": 30.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 30.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "nd safe concentration limits for each category. The SCCS considers that aluminium compounds are safe when used • in non-sprayable product categories at the maximum levels indicated in Tables 4 and 6; and • in sprayable products, at the maximum levels indicated in Table 4, provided that the",
+      "source_type": "sccs"
+    },
+    "date": "21 March 2023",
+    "sccs_reference": "SCCS/1644/22"
+  },
+  {
+    "file": "sccs_o_268.pdf",
+    "source": "sccs",
+    "ingredient_name": "salicylic acid",
+    "cas_numbers": [
+      "69-72-7"
+    ],
+    "noael_values": [
+      {
+        "value": 75.0,
+        "unit": "mg/kg bw/d",
+        "route": "dermal"
+      },
+      {
+        "value": 75.0,
+        "unit": "mg/kg/day",
+        "route": "oral"
+      },
+      {
+        "value": 75.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.5,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 0.5,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 0.5,
+        "product_type": "eye area"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "including the potential endocrine effects: - the SCCS is of the opinion that salicylic acid (CAS 69-72-7) is safe when used as preservative at a concentration of 0.5 % in cosmetic products, considering its current restrictions in place. The provided information shows that salicylic acid is an eye irritant wit",
+      "source_type": "sccs"
+    },
+    "date": "7 June 2023",
+    "sccs_reference": "SCCS/1646/22"
+  },
+  {
+    "file": "sccs_o_269.pdf",
+    "source": "sccs",
+    "ingredient_name": "Hydroxyapatite",
+    "cas_numbers": [
+      "1306-06-5"
+    ],
+    "noael_values": [],
+    "max_concentrations": [
+      {
+        "max_percent": 10.0,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 0.465,
+        "product_type": "oral care"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "posure conditions? Based on the data provided, the SCCS considers hydroxyapatite (nano) safe when used at concentrations up to 10% in toothpaste, and up to 0.465% in mouthwash. This safety evaluation only applies to the hydroxyapatite (nano) with the following characteristics: - compo",
+      "source_type": "sccs"
+    },
+    "date": "22 March 2023",
+    "sccs_reference": "SCCS/1648/22"
+  },
+  {
+    "file": "sccs_o_273_final.pdf",
+    "source": "sccs",
+    "ingredient_name": "final",
+    "cas_numbers": [],
+    "noael_values": [],
+    "max_concentrations": [
+      {
+        "max_percent": 0.001,
+        "product_type": "leave-on"
+      },
+      {
+        "max_percent": 0.01,
+        "product_type": "leave-on"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "cause plant materials are composed of mixtures. The SCCS considers that safety assessment of a botanical material/extract should involve, in the first instance, testing of the whole mixture for key toxicological endpoints - in particular genotoxicity. The TTC approach may t",
+      "source_type": "sccs"
+    },
+    "date": "15 May 2023",
+    "sccs_reference": "SCCS/1647/22"
+  },
+  {
+    "file": "sccs_o_274.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [],
+    "noael_values": [
+      {
+        "value": 50.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 75.0,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 2.52,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 0.02,
+        "product_type": "oral care"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "sions of SCCS/1633/21 and the aggregate exposure, the SCCS considers the use of Methyl Salicylate as safe in cosmetic products intended for children of age 0.5-3 years when used up to a maximum concentration of 0.02% in shower gel, hand soap, shampoo, body lotion, face cream, hand cream, lip products a",
+      "source_type": "sccs"
+    },
+    "date": "14 September 2023",
+    "sccs_reference": "SCCS/1654/23"
+  }
+]

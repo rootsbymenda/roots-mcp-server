@@ -1,0 +1,658 @@
+[
+  {
+    "chemical_name": "1-Methoxy-4-(1E)-1-propen-1-yl-benzene (Anethole)",
+    "inci_name": "Anethole",
+    "cas_numbers": "104-46-1|4180-23-8",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "2,4-Dimethyl-alpha-(4-methyl-3-pentenyl)benzenepropanol (Majantol)",
+    "inci_name": "Trimethylbenzenepropanol",
+    "cas_numbers": "103694-68-4",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "2,6,10-Trimethylcyclopentenyl methylisopentenol (Sandenol)",
+    "inci_name": "Trimethylcyclopentenyl Methylisopentenol",
+    "cas_numbers": "67801-20-1",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "2-Hydroxybenzaldehyde (Salicylaldehyde)",
+    "inci_name": "Salicylaldehyde",
+    "cas_numbers": "90-02-8",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "2-Methoxy-4-(1-propenyl)phenyl acetate (Isoeugenyl acetate)",
+    "inci_name": "Isoeugenyl Acetate",
+    "cas_numbers": "93-29-8",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "3,7-Dimethyl-2,6-octadien-1-yl acetate (Geranyl acetate)",
+    "inci_name": "Geranyl Acetate",
+    "cas_numbers": "105-87-3",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "3-Propylidenephthalide",
+    "inci_name": "3-Propylidenephthalide",
+    "cas_numbers": "17369-59-4",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "4-Allyl-2-methoxyphenyl acetate (Eugenyl acetate)",
+    "inci_name": "Eugenyl Acetate",
+    "cas_numbers": "93-28-7",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "4-Hydroxy-3-methoxybenzaldehyde (Vanillin)",
+    "inci_name": "Vanillin",
+    "cas_numbers": "121-33-5",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Acetyl cedrene (Methyl cedryl ketone)",
+    "inci_name": "Acetyl Cedrene",
+    "cas_numbers": "32388-55-9",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Benzaldehyde",
+    "inci_name": "Benzaldehyde",
+    "cas_numbers": "100-52-7",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Beta-Caryophyllene",
+    "inci_name": "Beta-Caryophyllene",
+    "cas_numbers": "87-44-5",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Bornan-2-one (Camphor) — includes isomers",
+    "inci_name": "Camphor",
+    "cas_numbers": "76-22-2|21368-68-3|464-49-3|464-48-2",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Cananga odorata flower oil and extract (Ylang Ylang)",
+    "inci_name": "Cananga Odorata Flower Oil / Cananga Odorata Flower Extract",
+    "cas_numbers": "83863-30-3|8006-81-3|68606-83-7|93686-30-7",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Carvone — includes D and L isomers",
+    "inci_name": "Carvone",
+    "cas_numbers": "99-49-0|6485-40-1|2244-16-8",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Cedrus atlantica bark oil and extract",
+    "inci_name": "Cedrus Atlantica Bark Oil / Cedrus Atlantica Bark Extract",
+    "cas_numbers": "92201-55-3|8023-85-6",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Cinnamomum cassia leaf oil (Cassia oil)",
+    "inci_name": "Cinnamomum Cassia Leaf Oil",
+    "cas_numbers": "8007-80-5|84961-46-6",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Cinnamomum zeylanicum bark oil (Cinnamon bark oil)",
+    "inci_name": "Cinnamomum Zeylanicum Bark Oil",
+    "cas_numbers": "8015-91-6|84649-98-9",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Citrus aurantium amara flower oil (Neroli / Bitter orange flower)",
+    "inci_name": "Citrus Aurantium Amara Flower Oil",
+    "cas_numbers": "72968-50-4|8028-48-6|8016-38-4",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Citrus aurantium amara peel oil (Bitter orange peel oil)",
+    "inci_name": "Citrus Aurantium Amara Peel Oil",
+    "cas_numbers": "68916-04-1|72968-50-4|97766-30-8|8028-48-6|8008-57-9",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Citrus aurantium bergamia peel oil (Bergamot oil)",
+    "inci_name": "Citrus Aurantium Bergamia Peel Oil",
+    "cas_numbers": "8007-75-8|89957-91-5|68648-33-9|85049-52-1",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Citrus limon peel oil (Lemon oil)",
+    "inci_name": "Citrus Limon Peel Oil",
+    "cas_numbers": "84929-31-7|8008-56-8",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Cymbopogon oils (Lemongrass — C. citratus, C. flexuosus, C. schoenanthus)",
+    "inci_name": "Cymbopogon Citratus Leaf Oil / Cymbopogon Schoenanthus Oil / Cymbopogon Flexuosus Oil",
+    "cas_numbers": "8007-02-1|89998-16-3|91844-92-7",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Dimethyl phenethyl acetate (DMPEA)",
+    "inci_name": "Dimethyl Phenethyl Acetate",
+    "cas_numbers": "151-05-3",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Eucalyptus globulus leaf oil",
+    "inci_name": "Eucalyptus Globulus Leaf Oil",
+    "cas_numbers": "97926-40-4|8000-48-4",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Eugenia caryophyllus (clove) leaf/bud/stem oil",
+    "inci_name": "Eugenia Caryophyllus Leaf Oil / Eugenia Caryophyllus Bud Oil",
+    "cas_numbers": "8000-34-8|8015-97-2|84961-50-2",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Hexadecanolactone (Exaltolide)",
+    "inci_name": "Hexadecanolactone",
+    "cas_numbers": "109-29-5",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Hexamethylindanopyran (Galaxolide / HHCB)",
+    "inci_name": "Hexamethylindanopyran",
+    "cas_numbers": "1222-05-5",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Jasminum grandiflorum / J. officinale flower oil and extract (Jasmine)",
+    "inci_name": "Jasminum Grandiflorum Flower Extract / Jasminum Officinale Oil",
+    "cas_numbers": "84776-64-7|90045-94-6|8022-96-6|8024-43-9",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Juniperus virginiana oil (Cedarwood Virginia oil)",
+    "inci_name": "Juniperus Virginiana Oil",
+    "cas_numbers": "8000-27-9|85085-41-2",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Laurus nobilis leaf oil (Bay laurel oil)",
+    "inci_name": "Laurus Nobilis Leaf Oil",
+    "cas_numbers": "8002-41-3|8007-48-5|84603-73-6",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Lavandula oil and extract (Lavender — L. angustifolia, L. hybrida, L. latifolia, L. stoechas)",
+    "inci_name": "Lavandula Angustifolia Oil / Lavandula Hybrida Oil / Lavandula Latifolia Herb Oil",
+    "cas_numbers": "91722-69-9|8022-15-9|93455-96-0|93455-97-1|92623-76-2|84776-65-8|8000-28-0|90063-37-9",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Linalyl acetate",
+    "inci_name": "Linalyl Acetate",
+    "cas_numbers": "115-95-7",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Lippia citriodora (verbena) absolute",
+    "inci_name": "Lippia Citriodora Leaf Oil / Lippia Citriodora Leaf Extract",
+    "cas_numbers": "8024-12-2|85116-63-8",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Mentha piperita oil (Peppermint oil)",
+    "inci_name": "Mentha Piperita Oil",
+    "cas_numbers": "8006-90-4|84082-70-2",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Mentha spicata oil (Spearmint oil)",
+    "inci_name": "Mentha Viridis Leaf Oil",
+    "cas_numbers": "8008-79-5|84696-51-5",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Menthol — includes isomers",
+    "inci_name": "Menthol",
+    "cas_numbers": "89-78-1|1490-04-6|2216-51-5|15356-60-2",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Methyl 2-hydroxybenzoate (Methyl salicylate)",
+    "inci_name": "Methyl Salicylate",
+    "cas_numbers": "119-36-8",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Myroxylon pereirae (balsam of Peru) oil and extract",
+    "inci_name": "Myroxylon Pereirae Oil / Myroxylon Pereirae Extract",
+    "cas_numbers": "8007-00-9",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Narcissus oil and extract (N. jonquilla, N. poeticus, N. pseudonarcissus, N. tazetta)",
+    "inci_name": "Narcissus Poeticus Extract / Narcissus Pseudonarcissus Extract",
+    "cas_numbers": "90064-26-9|68917-12-4|90064-27-0|90064-25-8",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Pelargonium graveolens flower oil (Geranium oil)",
+    "inci_name": "Pelargonium Graveolens Flower Oil",
+    "cas_numbers": "90082-51-2|8000-46-2",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Pentyl 2-hydroxybenzoate (Amyl salicylate)",
+    "inci_name": "Amyl Salicylate",
+    "cas_numbers": "2050-08-0",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Pinene — alpha-Pinene and beta-Pinene isomers",
+    "inci_name": "Pinene",
+    "cas_numbers": "80-56-8|7785-70-8|127-91-3|18172-67-3",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Pinus mugo leaf/twig oil and extract",
+    "inci_name": "Pinus Mugo Leaf Oil / Pinus Mugo Leaf Extract",
+    "cas_numbers": "90082-72-7",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Pinus pumila leaf/twig oil and extract",
+    "inci_name": "Pinus Pumila Leaf Oil / Pinus Pumila Leaf Extract",
+    "cas_numbers": "97676-05-6",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Pogostemon cablin oil (Patchouli oil)",
+    "inci_name": "Pogostemon Cablin Oil",
+    "cas_numbers": "8014-09-3|84238-39-1",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Rosa flower oil and extract (Rose — R. damascena, R. centifolia, R. gallica, R. alba, etc.)",
+    "inci_name": "Rosa Damascena Flower Oil / Rosa Centifolia Flower Extract",
+    "cas_numbers": "8007-01-0|90106-38-0|93334-48-6|84696-47-9|84604-12-6|84604-13-7|92347-25-6",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Rose ketones — damascones, damascenones and rose ketone isomers",
+    "inci_name": "Rose Ketones",
+    "cas_numbers": "43052-87-5|23726-94-5|24720-09-0|23696-85-7|57378-68-4|71048-82-3|23726-92-3|23726-91-2",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Santalol — includes alpha and beta isomers",
+    "inci_name": "Santalol",
+    "cas_numbers": "11031-45-1|115-71-9|77-42-9",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Santalum album oil (Sandalwood oil)",
+    "inci_name": "Santalum Album Oil",
+    "cas_numbers": "8006-87-9|84787-70-2",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Sclareol",
+    "inci_name": "Sclareol",
+    "cas_numbers": "515-03-7",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Terpineol — includes alpha, beta, gamma isomers",
+    "inci_name": "Terpineol",
+    "cas_numbers": "8000-41-7|98-55-5|138-87-4|586-81-2",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Tetramethyl acetyloctahydronaphthalenes (Iso E Super / OTNE)",
+    "inci_name": "Tetramethyl Acetyloctahydronaphthalenes",
+    "cas_numbers": "54464-57-2|54464-59-4|68155-66-8|68155-67-9",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Turpentine / Gum turpentine / Turpentine oil",
+    "inci_name": "Turpentine",
+    "cas_numbers": "9005-90-7|8006-64-2|8052-14-0",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "p-Mentha-1,3-diene (Alpha-Terpinene)",
+    "inci_name": "Alpha-Terpinene",
+    "cas_numbers": "99-86-5",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "p-Mentha-1,4(8)-diene (Terpinolene)",
+    "inci_name": "Terpinolene",
+    "cas_numbers": "586-62-9",
+    "category": "new_56",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "1,6-Octadien-3-ol, 3,7-dimethyl- (Linalool)",
+    "inci_name": "Linalool",
+    "cas_numbers": "78-70-6",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "2,6,10-Dodecatrien-1-ol, 3,7,11-trimethyl-",
+    "inci_name": "Farnesol",
+    "cas_numbers": "4602-84-0",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "2,6-Octadien-1-ol, 3,7-dimethyl-, (2E)- (Geraniol)",
+    "inci_name": "Geraniol",
+    "cas_numbers": "106-24-1",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "2-Benzylideneheptanal",
+    "inci_name": "Amyl Cinnamal",
+    "cas_numbers": "122-40-7",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "2-Benzylideneoctanal",
+    "inci_name": "Hexyl Cinnamal",
+    "cas_numbers": "101-86-0",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "2-Pentyl-3-phenylprop-2-en-1-ol",
+    "inci_name": "Amylcinnamyl Alcohol",
+    "cas_numbers": "101-85-9",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "2-Propenal, 3-phenyl- (Cinnamaldehyde)",
+    "inci_name": "Cinnamal",
+    "cas_numbers": "104-55-2",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "2-Propenoic acid, 3-phenyl-, phenylmethyl ester",
+    "inci_name": "Benzyl Cinnamate",
+    "cas_numbers": "103-41-3",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "2H-1-Benzopyran-2-one (Coumarin)",
+    "inci_name": "Coumarin",
+    "cas_numbers": "91-64-5",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "3 and 4-(4-Hydroxy-4-methylpentyl)cyclohex-3-ene-1-carbaldehyde (HICC / Lyral)",
+    "inci_name": "Hydroxyisohexyl 3-Cyclohexene Carboxaldehyde",
+    "cas_numbers": "51414-25-6|31906-04-4",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "3,7-Dimethyl-2,6-octadienal (Citral) — includes geranial and neral",
+    "inci_name": "Citral",
+    "cas_numbers": "5392-40-5|141-27-5|106-26-3",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "3-Methyl-4-(2,6,6-trimethyl-2-cyclohexen-1-yl)-3-buten-2-one",
+    "inci_name": "Alpha-Isomethyl Ionone",
+    "cas_numbers": "127-51-5",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "4-Methoxybenzyl alcohol",
+    "inci_name": "Anise Alcohol",
+    "cas_numbers": "105-13-5",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "6-Methylcoumarin",
+    "inci_name": "6-Methyl Coumarin",
+    "cas_numbers": "92-48-8",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "7-Hydroxycitronellal",
+    "inci_name": "Hydroxycitronellal",
+    "cas_numbers": "107-75-5",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Benzyl alcohol",
+    "inci_name": "Benzyl Alcohol",
+    "cas_numbers": "100-51-6",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Benzyl benzoate",
+    "inci_name": "Benzyl Benzoate",
+    "cas_numbers": "120-51-4",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Benzyl salicylate",
+    "inci_name": "Benzyl Salicylate",
+    "cas_numbers": "118-58-1",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Cinnamyl alcohol",
+    "inci_name": "Cinnamyl Alcohol",
+    "cas_numbers": "104-54-1",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Citronellol — (+-)-3,7-dimethyloct-6-en-1-ol and isomers",
+    "inci_name": "Citronellol",
+    "cas_numbers": "106-22-9|26489-01-0|1117-61-9|7540-51-4",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Evernia furfuracea (treemoss) extract",
+    "inci_name": "Evernia Furfuracea Extract",
+    "cas_numbers": "90028-67-4",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Evernia prunastri (oak moss) extract",
+    "inci_name": "Evernia Prunastri Extract",
+    "cas_numbers": "90028-68-5",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Methyl oct-2-ynoate / Methyl heptine carbonate",
+    "inci_name": "Methyl 2-Octynoate",
+    "cas_numbers": "111-12-6",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Phenol, 2-methoxy-4-(1-propenyl) (Isoeugenol) — includes cis/trans isomers",
+    "inci_name": "Isoeugenol",
+    "cas_numbers": "97-54-1|5932-68-3|5912-86-7",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "Phenol, 2-methoxy-4-(2-propenyl) (Eugenol)",
+    "inci_name": "Eugenol",
+    "cas_numbers": "97-53-0",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  },
+  {
+    "chemical_name": "d-Limonene / (4R)-1-Methyl-4-(1-methylethenyl)cyclohexene and isomers",
+    "inci_name": "Limonene",
+    "cas_numbers": "138-86-3|7705-14-8|5989-27-5|5989-54-8",
+    "category": "original_26",
+    "leave_on_threshold_pct": 0.001,
+    "rinse_off_threshold_pct": 0.01
+  }
+]

@@ -26,7 +26,28 @@ interface Env {
 // gated per HARD RULE #2.
 
 const PAID_PLANS = new Set(["starter", "trial", "professional", "enterprise"]);
-const ADMIN_EMAILS = ["benda5505@gmail.com"];
+const RATE_LIMIT_PER_MINUTE = 60;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now >= entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  entry.count++;
+  if (entry.count > RATE_LIMIT_PER_MINUTE) return false;
+  return true;
+}
+
+function rateLimitResponse(): Response {
+  return new Response(JSON.stringify({ error: "Rate limit exceeded. Maximum 60 requests per minute." }), {
+    status: 429,
+    headers: { "Content-Type": "application/json", "Retry-After": "60" },
+  });
+}
 
 interface AuthProps extends Record<string, unknown> {
   tier: "paid" | "free";
@@ -126,7 +147,8 @@ async function resolveAuth(request: Request, env: Env): Promise<AuthProps> {
     console.error("resolveAuth: admin user lookup failed", e);
   }
 
-  if (userEmail && ADMIN_EMAILS.includes(userEmail)) {
+  const adminEmails = (env as any).ADMIN_EMAILS ? String((env as any).ADMIN_EMAILS).split(",") : [];
+  if (userEmail && adminEmails.includes(userEmail)) {
     return { tier: "paid", user_id: userId, plan: "enterprise" };
   }
 
@@ -1269,6 +1291,12 @@ export default {
     ctx: ExecutionContext
   ): Promise<Response> {
     const url = new URL(request.url);
+
+    const clientIp = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "unknown";
+    const isDataEndpoint = url.pathname === "/mcp" || url.pathname === "/sse" || url.pathname.startsWith("/sse/") || (request.method === "POST" && url.pathname === "/");
+    if (isDataEndpoint && !checkRateLimit(clientIp)) {
+      return rateLimitResponse();
+    }
 
     // SEP-1649: some MCP clients POST initialize to root; route them to streamable HTTP.
     // Rewrite URL pathname to /mcp so RootsMCP.serve("/mcp") matches the route.

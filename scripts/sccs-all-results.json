@@ -1,0 +1,2047 @@
+[
+  {
+    "file": "sccs_o_210.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [],
+    "noael_values": [],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "16 May 2018",
+    "sccs_reference": "SCCS/1588/17"
+  },
+  {
+    "file": "sccs_o_258.pdf",
+    "source": "sccs",
+    "ingredient_name": "Prostaglandins and prostaglandin-analogues",
+    "cas_numbers": [
+      "157283-66-4",
+      "1185851-52-8"
+    ],
+    "noael_values": [],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "3 February 2022",
+    "sccs_reference": "SCCS/1635/21"
+  },
+  {
+    "file": "sccs_o_259.pdf",
+    "source": "sccs",
+    "ingredient_name": "Kojic acid",
+    "cas_numbers": [
+      "501-30-4"
+    ],
+    "noael_values": [
+      {
+        "value": 23.8,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 5.85,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 6.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 62.5,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 150.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 30.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 100.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 6.0,
+        "unit": "mg/kg \nbw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 2.0,
+        "unit": "mg/kg \nbw/day",
+        "route": "oral"
+      },
+      {
+        "value": 62.5,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 1.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 1.0,
+        "product_type": "leave-on"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "al endocrine disrupting properties of Kojic acid, the SCCS is of the opinion that Kojic acid is safe when used as a skin lightening agent in cosmetic products at concentrations of up to 1%. 2. Alternatively, what is according to the SCCS the maximum concentration considered safe for use of Ko",
+      "source_type": "sccs"
+    },
+    "date": "16 March 2022",
+    "sccs_reference": "SCCS/1637/21"
+  },
+  {
+    "file": "sccs_o_261.pdf",
+    "source": "sccs",
+    "ingredient_name": "vitamin A",
+    "cas_numbers": [],
+    "noael_values": [],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "25 October 2022",
+    "sccs_reference": "SCCS/1639/21"
+  },
+  {
+    "file": "sccs_o_262.pdf",
+    "source": "sccs",
+    "ingredient_name": "4-Methylbenzylidene camphor",
+    "cas_numbers": [
+      "36861-47-9",
+      "38102-62-4"
+    ],
+    "noael_values": [
+      {
+        "value": 25.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 25.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 4.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 4.0,
+        "product_type": "leave-on"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "from 4 to 1 as proposed in the previous Opinion. The SCCS considers the use of a safety factor of 1 is appropriate for interspecies differences in toxicokinetics, whereas in the absence of substance specific data, a safety factor of 2.5 to account for interspecies differences in tox",
+      "source_type": "sccs"
+    },
+    "date": "29 April 2022",
+    "sccs_reference": "SCCS/1640/21"
+  },
+  {
+    "file": "sccs_o_263.pdf",
+    "source": "sccs",
+    "ingredient_name": "Genistein and Daidzein",
+    "cas_numbers": [
+      "446-72-0",
+      "486-66-8"
+    ],
+    "noael_values": [
+      {
+        "value": 4.0,
+        "unit": "mg/kg bw/day",
+        "route": "subcutaneous"
+      },
+      {
+        "value": 35.0,
+        "unit": "mg/kg",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.007,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 0.02,
+        "product_type": "general"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "e and justified than the data from oral studies. The SCCS considers that the calculation of margin of safety (MoS) for daidzein based on the data from subcutaneous route would provide a more reliable indicator of SCCS/1641/22 Final version Corrigendum October 2022 Opinion on genistein and daidzein",
+      "source_type": "sccs"
+    },
+    "date": "16 September 2022",
+    "sccs_reference": "SCCS/1641/2022"
+  },
+  {
+    "file": "sccs_o_264.pdf",
+    "source": "sccs",
+    "ingredient_name": "the safety of alpha-arbutin and",
+    "cas_numbers": [],
+    "noael_values": [
+      {
+        "value": 20.0,
+        "unit": "mg/kg bw/d",
+        "route": "not specified"
+      },
+      {
+        "value": 15.0,
+        "unit": "mg/kg bw/d",
+        "route": "not specified"
+      },
+      {
+        "value": 100.0,
+        "unit": "mg/kg bw/day",
+        "route": "subcutaneous"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 2.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 0.5,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 7.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 0.02,
+        "product_type": "nail product"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "31 January 2023",
+    "sccs_reference": "SCCS/1642/22"
+  },
+  {
+    "file": "sccs_o_265.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [],
+    "noael_values": [
+      {
+        "value": 12.0,
+        "unit": "mg/kg bw/d",
+        "route": "dermal"
+      },
+      {
+        "value": 65.0,
+        "unit": "mg/kg bw/d",
+        "route": "not specified"
+      },
+      {
+        "value": 8.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 4.69,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 1.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 10.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 3.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 8.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 12.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 25.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 25.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 6.75,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.2,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 1.5,
+        "product_type": "rinse-off"
+      },
+      {
+        "max_percent": 0.2,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 0.2,
+        "product_type": "rinse-off"
+      },
+      {
+        "max_percent": 0.3,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 1.5,
+        "product_type": "general"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "ion reproductive toxicity studies, respectively), the SCCS considers a PoD of 8 mg/kg bw/day to be appropriate for safety assessment of triclosan. A 20-day repeated dose toxicity study and an uterotrophic assay in rats (Stoker et al. 2010), where the authors derived a NOEL of 9.375 mg/kg bw/day and LOEL of 18.75 mg/",
+      "source_type": "sccs"
+    },
+    "date": "25 October 2022",
+    "sccs_reference": "SCCS/1643/22"
+  },
+  {
+    "file": "sccs_o_266_0.pdf",
+    "source": "sccs",
+    "ingredient_name": "the safety of aluminium in cosmetic products",
+    "cas_numbers": [],
+    "noael_values": [
+      {
+        "value": 30.0,
+        "unit": "mg/kg bw/day",
+        "route": "dermal"
+      },
+      {
+        "value": 30.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 30.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "nd safe concentration limits for each category. The SCCS considers that aluminium compounds are safe when used • in non-sprayable product categories at the maximum levels indicated in Tables 4 and 6; and • in sprayable products, at the maximum levels indicated in Table 4, provided that the",
+      "source_type": "sccs"
+    },
+    "date": "21 March 2023",
+    "sccs_reference": "SCCS/1644/22"
+  },
+  {
+    "file": "sccs_o_267.pdf",
+    "source": "sccs",
+    "ingredient_name": "Sodium bromothymol blue",
+    "cas_numbers": [
+      "34722-90-2"
+    ],
+    "noael_values": [],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "ucleus test in L5178Y TK+/- mouse lymphoma cells, the SCCS considers sodium bromothymol blue to be safe in terms of mutagenicity. Carcinogenicity No data provided Photo-induced toxicity No data provided Human data No data provided Special investigation No data provided SCCS/",
+      "source_type": "sccs"
+    },
+    "date": "22 March 2023",
+    "sccs_reference": "SCCS/1645/22"
+  },
+  {
+    "file": "sccs_o_268.pdf",
+    "source": "sccs",
+    "ingredient_name": "salicylic acid",
+    "cas_numbers": [
+      "69-72-7"
+    ],
+    "noael_values": [
+      {
+        "value": 75.0,
+        "unit": "mg/kg bw/d",
+        "route": "dermal"
+      },
+      {
+        "value": 75.0,
+        "unit": "mg/kg/day",
+        "route": "oral"
+      },
+      {
+        "value": 75.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.5,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 0.5,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 0.5,
+        "product_type": "eye area"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "including the potential endocrine effects: - the SCCS is of the opinion that salicylic acid (CAS 69-72-7) is safe when used as preservative at a concentration of 0.5 % in cosmetic products, considering its current restrictions in place. The provided information shows that salicylic acid is an eye irritant wit",
+      "source_type": "sccs"
+    },
+    "date": "7 June 2023",
+    "sccs_reference": "SCCS/1646/22"
+  },
+  {
+    "file": "sccs_o_269.pdf",
+    "source": "sccs",
+    "ingredient_name": "Hydroxyapatite",
+    "cas_numbers": [
+      "1306-06-5"
+    ],
+    "noael_values": [],
+    "max_concentrations": [
+      {
+        "max_percent": 10.0,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 0.465,
+        "product_type": "oral care"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "posure conditions? Based on the data provided, the SCCS considers hydroxyapatite (nano) safe when used at concentrations up to 10% in toothpaste, and up to 0.465% in mouthwash. This safety evaluation only applies to the hydroxyapatite (nano) with the following characteristics: - compo",
+      "source_type": "sccs"
+    },
+    "date": "22 March 2023",
+    "sccs_reference": "SCCS/1648/22"
+  },
+  {
+    "file": "sccs_o_270_final.pdf",
+    "source": "sccs",
+    "ingredient_name": "Silver Zinc Zeolite",
+    "cas_numbers": [
+      "130328-20-0"
+    ],
+    "noael_values": [
+      {
+        "value": 50.0,
+        "unit": "mg/kg bw/d",
+        "route": "not specified"
+      },
+      {
+        "value": 31.52,
+        "unit": "mg/kg bw",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "21 December 2023",
+    "sccs_reference": "SCCS/1650/23"
+  },
+  {
+    "file": "sccs_o_271.pdf",
+    "source": "sccs",
+    "ingredient_name": "Fullerenes, Hydroxylated Fullerenes and hydrated forms of",
+    "cas_numbers": [],
+    "noael_values": [
+      {
+        "value": 1.0,
+        "unit": "mg/kg bw/d",
+        "route": "not specified"
+      },
+      {
+        "value": 0.1,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "not safe",
+      "conclusion_text": "hydroxylated fullerenes are genotoxic and hence the SCCS considers them as not safe for use in cosmetic products. In view of the equivalence to hydrated forms of hydroxylated fullerenes, as discussed in section 3.1.1.5, the same concerns over genotoxicity potential also apply to h",
+      "source_type": "sccs"
+    },
+    "date": "26 October 2023",
+    "sccs_reference": "SCCS/1649/23"
+  },
+  {
+    "file": "sccs_o_272.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [
+      "1166834-57-6"
+    ],
+    "noael_values": [
+      {
+        "value": 25.0,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.35,
+        "product_type": "hair dye"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "27 April 2023",
+    "sccs_reference": "SCCS/1653/23"
+  },
+  {
+    "file": "sccs_o_273_final.pdf",
+    "source": "sccs",
+    "ingredient_name": "final",
+    "cas_numbers": [],
+    "noael_values": [],
+    "max_concentrations": [
+      {
+        "max_percent": 0.001,
+        "product_type": "leave-on"
+      },
+      {
+        "max_percent": 0.01,
+        "product_type": "leave-on"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "cause plant materials are composed of mixtures. The SCCS considers that safety assessment of a botanical material/extract should involve, in the first instance, testing of the whole mixture for key toxicological endpoints - in particular genotoxicity. The TTC approach may t",
+      "source_type": "sccs"
+    },
+    "date": "15 May 2023",
+    "sccs_reference": "SCCS/1647/22"
+  },
+  {
+    "file": "sccs_o_274.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [],
+    "noael_values": [
+      {
+        "value": 50.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 75.0,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 2.52,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 0.02,
+        "product_type": "oral care"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "sions of SCCS/1633/21 and the aggregate exposure, the SCCS considers the use of Methyl Salicylate as safe in cosmetic products intended for children of age 0.5-3 years when used up to a maximum concentration of 0.02% in shower gel, hand soap, shampoo, body lotion, face cream, hand cream, lip products a",
+      "source_type": "sccs"
+    },
+    "date": "14 September 2023",
+    "sccs_reference": "SCCS/1654/23"
+  },
+  {
+    "file": "sccs_o_275.pdf",
+    "source": "sccs",
+    "ingredient_name": "Butylparaben",
+    "cas_numbers": [
+      "94-26-8"
+    ],
+    "noael_values": [
+      {
+        "value": 325.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 1000.0,
+        "unit": "mg/kg \nbw/day",
+        "route": "oral"
+      },
+      {
+        "value": 1100.0,
+        "unit": "mg/kgbw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 14.4,
+        "unit": "mg/kgbw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 100.0,
+        "unit": "mg/kg \nbw/day",
+        "route": "subcutaneous"
+      },
+      {
+        "value": 250.0,
+        "unit": "mg/kg \nbw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 100.0,
+        "unit": "mg/kg \nbw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 160.0,
+        "unit": "mg/kg \nbw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 10.0,
+        "unit": "mg/kg \nbw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 1086.6,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.14,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 0.197,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 0.6,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 4.0,
+        "product_type": "general"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "26 October 2023",
+    "sccs_reference": "SCCS/1651/23"
+  },
+  {
+    "file": "sccs_o_276_final.pdf",
+    "source": "sccs",
+    "ingredient_name": "Methylparaben",
+    "cas_numbers": [
+      "99-76-3"
+    ],
+    "noael_values": [
+      {
+        "value": 1000.0,
+        "unit": "mg/kg/day",
+        "route": "oral"
+      },
+      {
+        "value": 1000.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 250.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 300.0,
+        "unit": "mg/kg \nbw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 300.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.4,
+        "product_type": "general"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "14 December 2023",
+    "sccs_reference": "SCCS/1652/23"
+  },
+  {
+    "file": "sccs_o_277.pdf",
+    "source": "sccs",
+    "ingredient_name": "Benzyl Salicylate",
+    "cas_numbers": [
+      "118-58-1"
+    ],
+    "noael_values": [
+      {
+        "value": 166.0,
+        "unit": "mg/kg/day",
+        "route": "oral"
+      },
+      {
+        "value": 214.0,
+        "unit": "mg/kg/day",
+        "route": "oral"
+      },
+      {
+        "value": 75.0,
+        "unit": "mg/kg/day",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.001,
+        "product_type": "leave-on"
+      },
+      {
+        "max_percent": 0.01,
+        "product_type": "leave-on"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "26 October 2023",
+    "sccs_reference": "SCCS/1656/23"
+  },
+  {
+    "file": "sccs_o_278.pdf",
+    "source": "sccs",
+    "ingredient_name": "NANOMATERIALS IN COSMETICS",
+    "cas_numbers": [],
+    "noael_values": [],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "6 June 2023",
+    "sccs_reference": "SCCS/1655/23"
+  },
+  {
+    "file": "sccs_o_279.pdf",
+    "source": "sccs",
+    "ingredient_name": "water-soluble zinc salts used in oral hygiene",
+    "cas_numbers": [
+      "557-34-6",
+      "7646-85-7",
+      "4468-02-4",
+      "546-46-3",
+      "7733-02-0",
+      "7446-19-7",
+      "7446-20-0"
+    ],
+    "noael_values": [],
+    "max_concentrations": [
+      {
+        "max_percent": 1.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 1.0,
+        "product_type": "oral care"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "26 October 2023",
+    "sccs_reference": "SCCS/1657/23"
+  },
+  {
+    "file": "sccs_o_280_final.pdf",
+    "source": "sccs",
+    "ingredient_name": "Hydroxypropyl p-phenylenediamine and its dihydrochloride salt",
+    "cas_numbers": [
+      "73793-79-0",
+      "1928659-47-5"
+    ],
+    "noael_values": [
+      {
+        "value": 100.0,
+        "unit": "mg/kg/day",
+        "route": "oral"
+      },
+      {
+        "value": 30.0,
+        "unit": "mg/kg/day",
+        "route": "not specified"
+      },
+      {
+        "value": 30.0,
+        "unit": "mg/kg/day",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 20.0,
+        "product_type": "eye area"
+      },
+      {
+        "max_percent": 20.0,
+        "product_type": "general"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "28 February 2024",
+    "sccs_reference": "SCCS/1659/23"
+  },
+  {
+    "file": "sccs_o_281_final.pdf",
+    "source": "sccs",
+    "ingredient_name": "Hexyl Salicylate",
+    "cas_numbers": [
+      "6259-76-3"
+    ],
+    "noael_values": [
+      {
+        "value": 180.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 75.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 1127.0,
+        "unit": "mg/kg",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.5,
+        "product_type": "oral care"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "ed to potential endocrine disrupting properties, the SCCS considers Hexyl Salicylate safe when used up to the maximum concentrations as provided in Table 1 of this Opinion. Product type, Body parts Maximum concentration (% w/w) Hydroalcoholic-based fragrances 2 All Rinse-off prod",
+      "source_type": "sccs"
+    },
+    "date": "28 February 2024",
+    "sccs_reference": "SCCS/1658/23"
+  },
+  {
+    "file": "sccs_o_282.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [
+      "13463-67-7",
+      "1317-80-2",
+      "1317-70-0"
+    ],
+    "noael_values": [],
+    "max_concentrations": [
+      {
+        "max_percent": 16.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 6.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 7.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 0.7,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 3.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 9.0,
+        "product_type": "general"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "n light of this and given the many uncertainties, the panel concluded that E171 should no longer be considered as safe when used as a food additive. In May 2022, the Commission services received a dossier submission by industry accompanied by a comprehensive and up to date review of the genetic toxicity database fo",
+      "source_type": "cir"
+    },
+    "date": "13 May 2024",
+    "sccs_reference": "SCCS/1661/23"
+  },
+  {
+    "file": "sccs_o_283.pdf",
+    "source": "sccs",
+    "ingredient_name": "benzophenone - 4",
+    "cas_numbers": [
+      "4065-45-6"
+    ],
+    "noael_values": [
+      {
+        "value": 1239.0,
+        "unit": "mg/kg/day",
+        "route": "not specified"
+      },
+      {
+        "value": 1250.0,
+        "unit": "mg/kg/day",
+        "route": "not specified"
+      },
+      {
+        "value": 1239.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 620.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 5.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 5.0,
+        "product_type": "leave-on"
+      },
+      {
+        "max_percent": 0.015,
+        "product_type": "spray/aerosol"
+      },
+      {
+        "max_percent": 5.0,
+        "product_type": "spray/aerosol"
+      },
+      {
+        "max_percent": 10.0,
+        "product_type": "eye area"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "ed to potential endocrine disrupting properties, the SCCS is of the opinion that benzophenone-4 is safe when used as UV filter up to a maximum concentration of 5% in sunscreen, face and hand cream, all leave-on and rinse-off products (total dermal aggregate), lipstick, sunscreen propellant spray and",
+      "source_type": "sccs"
+    },
+    "date": "27 March 2024",
+    "sccs_reference": "SCCS/1660/23"
+  },
+  {
+    "file": "sccs_o_284.pdf",
+    "source": "sccs",
+    "ingredient_name": "the safety of aluminium in cosmetic products",
+    "cas_numbers": [],
+    "noael_values": [
+      {
+        "value": 30.0,
+        "unit": "mg/kg bw/day",
+        "route": "dermal"
+      },
+      {
+        "value": 30.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 30.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "ation limits for each category and product type. The SCCS considers that aluminium compounds are safe when used: - in non-sprayable product categories at the maximum levels indicated in Tables 1 and 2. - in sprayable products, at the maximum levels for the total formulation (i.e. including p",
+      "source_type": "sccs"
+    },
+    "date": "27 March 2024",
+    "sccs_reference": "SCCS/1662/23"
+  },
+  {
+    "file": "sccs_o_285.pdf",
+    "source": "sccs",
+    "ingredient_name": "the inhalation toxicity of the fragrance ingredient",
+    "cas_numbers": [
+      "84082-84-8"
+    ],
+    "noael_values": [],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "25 October 2024",
+    "sccs_reference": "SCCS/1663/24"
+  },
+  {
+    "file": "sccs_o_286.pdf",
+    "source": "sccs",
+    "ingredient_name": "Triphenyl phosphate",
+    "cas_numbers": [
+      "115-86-6"
+    ],
+    "noael_values": [
+      {
+        "value": 20.0,
+        "unit": "mg/kg bw/d",
+        "route": "not specified"
+      },
+      {
+        "value": 80.0,
+        "unit": "mg/kg \nbw/d",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 5.0,
+        "product_type": "nail product"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "25 July 2024",
+    "sccs_reference": "SCCS/1664/24"
+  },
+  {
+    "file": "sccs_o_287.pdf",
+    "source": "sccs",
+    "ingredient_name": "Citral",
+    "cas_numbers": [
+      "5392-40-5"
+    ],
+    "noael_values": [],
+    "max_concentrations": [
+      {
+        "max_percent": 0.001,
+        "product_type": "leave-on"
+      },
+      {
+        "max_percent": 0.01,
+        "product_type": "leave-on"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "29 July 2024",
+    "sccs_reference": "SCCS/1666/24"
+  },
+  {
+    "file": "sccs_o_288.pdf",
+    "source": "sccs",
+    "ingredient_name": "the safety of Silver",
+    "cas_numbers": [
+      "7440-22-4"
+    ],
+    "noael_values": [
+      {
+        "value": 0.0045,
+        "unit": "mg/kg bw/d",
+        "route": "not specified"
+      },
+      {
+        "value": 0.0045,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.2,
+        "product_type": "leave-on"
+      },
+      {
+        "max_percent": 0.3,
+        "product_type": "leave-on"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "not safe",
+      "conclusion_text": "classification as toxic for reproduction Cat. 2, the SCCS considers micron-sized particulate Silver not safe at concentrations up to 0.2 % in rinse-off and 0.3 % in leave-on cosmetic products when used alone or in combination. However, the use of micron-sized particulate Silver in eye shadow and oral",
+      "source_type": "sccs"
+    },
+    "date": "20 June 2024",
+    "sccs_reference": "SCCS/1665/24"
+  },
+  {
+    "file": "sccs_o_289.pdf",
+    "source": "sccs",
+    "ingredient_name": "new coating for Titanium Dioxide",
+    "cas_numbers": [
+      "13463-67-7",
+      "1317-70-0",
+      "1317-80-2"
+    ],
+    "noael_values": [
+      {
+        "value": 1742.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 25.0,
+        "product_type": "general"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": ". The CIR Expert Panel concluded that dimethicone is safe in cosmetics in the present practices of use and reported concentration ranges when formulated to be non- irritating, with the exception that the available data are insufficient to make a determination of safety for use in products that",
+      "source_type": "cir"
+    },
+    "date": "25 October 2024",
+    "sccs_reference": "SCCS/1667/24"
+  },
+  {
+    "file": "sccs_o_290.pdf",
+    "source": "sccs",
+    "ingredient_name": "Hexyl Salicylate SCCS/1658/23",
+    "cas_numbers": [
+      "6259-76-3"
+    ],
+    "noael_values": [
+      {
+        "value": 180.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 75.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 1127.0,
+        "unit": "mg/kg",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.5,
+        "product_type": "oral care"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "ncluding potential endocrine disrupting effects, the SCCS considers Hexyl Salicylate safe for children up to 3 years old when used up to the maximum concentrations as below: o 0.1 % (w/w) for shower gel, hand soap, shampoo, hair conditioner, body lotion, face cream, hand cream, lips",
+      "source_type": "sccs"
+    },
+    "date": "25 October 2024",
+    "sccs_reference": "SCCS/1668/24"
+  },
+  {
+    "file": "sccs_o_291.pdf",
+    "source": "sccs",
+    "ingredient_name": "Biphenyl-2-ol and Sodium 2-biphenylolate",
+    "cas_numbers": [
+      "90-43-7",
+      "132-27-4"
+    ],
+    "noael_values": [
+      {
+        "value": 25.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 39.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 25.0,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      },
+      {
+        "value": 200.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 100.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 100.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 761.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 1000.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 200.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 353.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 625.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 100.0,
+        "unit": "mg/kg bw/day",
+        "route": "dermal"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.2,
+        "product_type": "rinse-off"
+      },
+      {
+        "max_percent": 0.2,
+        "product_type": "leave-on"
+      },
+      {
+        "max_percent": 0.15,
+        "product_type": "leave-on"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "osmetic products? In light of the data provided, the SCCS considers o-Phenylphenol safe when used as preservative up to a maximum concentration of 0.2 % in rinse-off and 0.15 % in leave- on cosmetic products. O-Phenylphenol and Sodium o-Phenylphenate, when used together: • should no",
+      "source_type": "sccs"
+    },
+    "date": "25 October 2024",
+    "sccs_reference": "SCCS/1669/24"
+  },
+  {
+    "file": "sccs_o_292.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [
+      "1184721-10-5"
+    ],
+    "noael_values": [],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "and 8B and its parent compound HC Yellow 16. In conclusion, and based on the available data, the quality in the market is safe for use under the present practice of use and concentration and the impurity levels of 5B, 7B and 8B do not pose a health risk to the consumer. SCCS comment The SCCS has noted that the Applican",
+      "source_type": "sccs"
+    },
+    "date": "25 October 2024",
+    "sccs_reference": "SCCS/1670/24"
+  },
+  {
+    "file": "sccs_o_293.pdf",
+    "source": "sccs",
+    "ingredient_name": "Benzophenone - 1",
+    "cas_numbers": [
+      "131-56-6"
+    ],
+    "noael_values": [
+      {
+        "value": 110.0,
+        "unit": "mg/kg bw/day",
+        "route": "dermal"
+      },
+      {
+        "value": 388.0,
+        "unit": "mg/kg bw/day",
+        "route": "dermal"
+      },
+      {
+        "value": 200.0,
+        "unit": "mg/kg bw/day",
+        "route": "dermal"
+      },
+      {
+        "value": 364.0,
+        "unit": "mg/kg bw/day",
+        "route": "dermal"
+      },
+      {
+        "value": 190.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 100.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 250.0,
+        "unit": "mg/kg \nbw/day",
+        "route": "oral"
+      },
+      {
+        "value": 1850.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 400.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 200.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 1850.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 400.0,
+        "unit": "mg/kg bw/day",
+        "route": "dermal"
+      },
+      {
+        "value": 100.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 393.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 67.9,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 2.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 2.0,
+        "product_type": "leave-on"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "not safe",
+      "conclusion_text": "ty and potential endocrine disrupting properties, the SCCS considers Benzophenone-1 not safe when used as a light stabiliser in cosmetic products for the following reasons: • The available data indicate genotoxicity potential of Benzophenone-1. • The evidence assessed by the SCCS also",
+      "source_type": "sccs"
+    },
+    "date": "27 March 2025",
+    "sccs_reference": "SCCS/1672/24"
+  },
+  {
+    "file": "sccs_o_294.pdf",
+    "source": "sccs",
+    "ingredient_name": "Opinion on",
+    "cas_numbers": [
+      "5466-77-3",
+      "83834-59-7"
+    ],
+    "noael_values": [
+      {
+        "value": 450.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 450.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 1000.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 500.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 100.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 10.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 10.0,
+        "product_type": "spray/aerosol"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "otential endocrine disrupting properties of EHMC, the SCCS is of the opinion that EHMC is safe when used as a UV filter up to a maximum concentration of 10% in sunscreen lotion, face and hand cream, lipstick, sunscreen propellant spray and pump spray, when used separately or in combination.",
+      "source_type": "sccs"
+    },
+    "date": "26 June 2025",
+    "sccs_reference": "SCCS/1671/24"
+  },
+  {
+    "file": "sccs_o_295.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [
+      "1444596-49-9"
+    ],
+    "noael_values": [
+      {
+        "value": 3.0,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "formulations? In light of the data provided, the SCCS considers HC Red 18 safe when used as an ingredient at 1.5% in oxidative hair dye and at 0.5% in non-oxidative hair dye formulations. (2) Does the SCCS have any further scientific concerns with regard to the use of",
+      "source_type": "sccs"
+    },
+    "date": "22 January 2025",
+    "sccs_reference": "SCCS/1673/24"
+  },
+  {
+    "file": "sccs_o_296.pdf",
+    "source": "sccs",
+    "ingredient_name": "Butylparaben",
+    "cas_numbers": [
+      "94-26-8"
+    ],
+    "noael_values": [],
+    "max_concentrations": [
+      {
+        "max_percent": 0.14,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 0.197,
+        "product_type": "general"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "30 April 2025",
+    "sccs_reference": "SCCS/1674/25"
+  },
+  {
+    "file": "sccs_o_297.pdf",
+    "source": "sccs",
+    "ingredient_name": "Salicylic Acid",
+    "cas_numbers": [
+      "69-72-7"
+    ],
+    "noael_values": [
+      {
+        "value": 75.0,
+        "unit": "mg/kg/day",
+        "route": "oral"
+      },
+      {
+        "value": 75.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.5,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 0.5,
+        "product_type": "rinse-off"
+      },
+      {
+        "max_percent": 0.5,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 0.5,
+        "product_type": "leave-on"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "not safe",
+      "conclusion_text": ", including the potential endocrine effects: • the SCCS is of the opinion that Salicylic Acid (CAS 69-72-7) is not safe when used as preservative at a concentration of 0.5% in all cosmetic products listed under conclusion (b), considering its current restrictions in place. With the exception of body lotion, it is s",
+      "source_type": "sccs"
+    },
+    "date": "30 April 2025",
+    "sccs_reference": "SCCS/1675/25"
+  },
+  {
+    "file": "sccs_o_298.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [],
+    "noael_values": [
+      {
+        "value": 50.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 75.0,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.02,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 2.52,
+        "product_type": "oral care"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "sions of SCCS/1633/21 and the aggregate exposure, the SCCS considers the use of Methyl Salicylate as safe in cosmetic products intended for children of age 0.5-3 years when used up to a maximum concentration of 0.02% in shower gel, hand soap, shampoo, body lotion, face cream, hand cream, lip products a",
+      "source_type": "sccs"
+    },
+    "date": "30 April 2025",
+    "sccs_reference": "SCCS/1676/25"
+  },
+  {
+    "file": "sccs_o_299.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [
+      "302776-68-7"
+    ],
+    "noael_values": [
+      {
+        "value": 5.0,
+        "unit": "mg/kg \nbw/d",
+        "route": "not specified"
+      },
+      {
+        "value": 2.5,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      },
+      {
+        "value": 5.0,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 10.0,
+        "product_type": "general"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "26 June 2025",
+    "sccs_reference": "SCCS/1678/25"
+  },
+  {
+    "file": "sccs_o_300.pdf",
+    "source": "sccs",
+    "ingredient_name": "Hydroxyapatite",
+    "cas_numbers": [
+      "1306-06-5"
+    ],
+    "noael_values": [],
+    "max_concentrations": [
+      {
+        "max_percent": 29.5,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 10.0,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 0.465,
+        "product_type": "oral care"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "osure conditions? Based on the data provided, the SCCS considers hydroxyapatite (nano) safe when used at concentrations up to 29.5% in toothpaste, and up to 10% in mouthwash. This conclusion is based on the available evidence, which shows that hydroxyapatite (nano) does not pose a mut",
+      "source_type": "sccs"
+    },
+    "date": "26 June 2025",
+    "sccs_reference": "SCCS/1677/25"
+  },
+  {
+    "file": "sccs_o_301.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [
+      "131-55-5",
+      "6628-37-1"
+    ],
+    "noael_values": [
+      {
+        "value": 1239.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 5.0,
+        "product_type": "spray/aerosol"
+      },
+      {
+        "max_percent": 5.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 10.0,
+        "product_type": "eye area"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "g the potential endocrine disrupting properties, the SCCS is of the opinion that BP-5 is safe when used as a UV filter up to a maximum concentration of 5% in sunscreen, face and hand cream, lipstick, sunscreen propellant spray and pump spray, when used separately or in combination (based on",
+      "source_type": "sccs"
+    },
+    "date": "26 June 2025",
+    "sccs_reference": "SCCS/1679/25"
+  },
+  {
+    "file": "sccs_o_302.pdf",
+    "source": "sccs",
+    "ingredient_name": "PROSTAGLANDIN ANALOGUES:",
+    "cas_numbers": [
+      "155206-01-2",
+      "157283-66-4",
+      "1185851-52-8"
+    ],
+    "noael_values": [
+      {
+        "value": 0.1,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 0.1,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      },
+      {
+        "value": 0.01,
+        "unit": "mg/kg/day",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.018,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 0.03,
+        "product_type": "oral care"
+      },
+      {
+        "max_percent": 0.005,
+        "product_type": "eye area"
+      },
+      {
+        "max_percent": 0.005,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 0.018,
+        "product_type": "eye area"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "hloro Dihydroxy Difluoro Ethylcloprostenolamide - the SCCS is of the opinion that none of them can be considered safe for use in cosmetic products intended for promoting the growth of eyelashes and eyebrows. The SCCS conclusion is based on the potent pharmacological activity of the PGAs, even at low concentrat",
+      "source_type": "sccs"
+    },
+    "date": "2 February 2026",
+    "sccs_reference": "SCCS/1680/25"
+  },
+  {
+    "file": "sccs_o_303.pdf",
+    "source": "sccs",
+    "ingredient_name": "Tea Tree Oil",
+    "cas_numbers": [
+      "68647-73-4"
+    ],
+    "noael_values": [
+      {
+        "value": 25.0,
+        "unit": "mg/kg bw/d",
+        "route": "not specified"
+      },
+      {
+        "value": 20.0,
+        "unit": "mg/kg/day",
+        "route": "not specified"
+      },
+      {
+        "value": 20.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 30.0,
+        "unit": "mg/kg bw",
+        "route": "not specified"
+      },
+      {
+        "value": 45.0,
+        "unit": "mg/kg bw/day",
+        "route": "not specified"
+      },
+      {
+        "value": 30.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 2.0,
+        "product_type": "general"
+      },
+      {
+        "max_percent": 0.001,
+        "product_type": "leave-on"
+      },
+      {
+        "max_percent": 0.0002,
+        "product_type": "leave-on"
+      },
+      {
+        "max_percent": 2.0,
+        "product_type": "leave-on"
+      },
+      {
+        "max_percent": 0.1,
+        "product_type": "leave-on"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "30 October 2025",
+    "sccs_reference": "SCCS/1681/25"
+  },
+  {
+    "file": "sccs_o_304.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [
+      "68123-13-7"
+    ],
+    "noael_values": [],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "for which a TTC approach would be applicable. The SCCS considers a purity of only 80 % to be too low for the safety evaluation of a synthetic compound, particularly when the test material shows marked differences from the batches used in toxicological studies. SCCS/1683/25 Final version Scientific Advice on",
+      "source_type": "sccs"
+    },
+    "date": "2 February 2026",
+    "sccs_reference": "SCCS/1683/25"
+  },
+  {
+    "file": "sccs_o_305.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [
+      "26381-41-9"
+    ],
+    "noael_values": [
+      {
+        "value": 33.0,
+        "unit": "mg/kg bw/day",
+        "route": "oral"
+      },
+      {
+        "value": 59.0,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "2 February 2026",
+    "sccs_reference": "SCCS/1684/25"
+  },
+  {
+    "file": "sccs_o_306.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [
+      "25013-16-5"
+    ],
+    "noael_values": [
+      {
+        "value": 50.0,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      },
+      {
+        "value": 50.0,
+        "unit": "mg/kg bw/d",
+        "route": "dermal"
+      },
+      {
+        "value": 100.0,
+        "unit": "mg/kg bw/d",
+        "route": "oral"
+      },
+      {
+        "value": 50.0,
+        "unit": "mg/kg bw/d",
+        "route": "not specified"
+      },
+      {
+        "value": 55.0,
+        "unit": "mg/kg bw/d",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "unknown",
+    "sccs_reference": "SCCS/1682/25"
+  },
+  {
+    "file": "sccs_o_307.pdf",
+    "source": "sccs",
+    "ingredient_name": "Cannabidiol",
+    "cas_numbers": [],
+    "noael_values": [
+      {
+        "value": 150.0,
+        "unit": "mg/kg/day",
+        "route": "oral"
+      },
+      {
+        "value": 80.0,
+        "unit": "mg/kg/day",
+        "route": "oral"
+      },
+      {
+        "value": 150.0,
+        "unit": "mg/kg/day",
+        "route": "not specified"
+      },
+      {
+        "value": 24.75,
+        "unit": "mg/kg",
+        "route": "oral"
+      },
+      {
+        "value": 197.54,
+        "unit": "mg/kg",
+        "route": "oral"
+      },
+      {
+        "value": 25.0,
+        "unit": "mg/kg",
+        "route": "oral"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.19,
+        "product_type": "oral care"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "safe",
+      "conclusion_text": "cts 10 11 In view of all the available data, the SCCS considers CBD safe when used at concentrations 12 up to 0.19% in dermal cosmetic products and oral cosmetic products – whether used alone 13 or together. 14 15 (b) to identify the maximum safe level of Delta-",
+      "source_type": "sccs"
+    },
+    "date": "30 October 2025",
+    "sccs_reference": "SCCS/1685/25"
+  },
+  {
+    "file": "sccs_o_308.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [
+      "54-64-8"
+    ],
+    "noael_values": [],
+    "max_concentrations": [
+      {
+        "max_percent": 0.007,
+        "product_type": "eye area"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "2 February 2026",
+    "sccs_reference": "SCCS/1686/25"
+  },
+  {
+    "file": "sccs_o_309.pdf",
+    "source": "sccs",
+    "ingredient_name": "Unknown",
+    "cas_numbers": [
+      "7440-22-4"
+    ],
+    "noael_values": [
+      {
+        "value": 0.0045,
+        "unit": "mg/kg bw/d",
+        "route": "not specified"
+      }
+    ],
+    "max_concentrations": [
+      {
+        "max_percent": 0.2,
+        "product_type": "leave-on"
+      },
+      {
+        "max_percent": 0.3,
+        "product_type": "leave-on"
+      }
+    ],
+    "safety_conclusion": {
+      "verdict": "unknown",
+      "conclusion_text": "",
+      "source_type": "unknown"
+    },
+    "date": "17 December 2025",
+    "sccs_reference": "SCCS/1687/25"
+  }
+]
