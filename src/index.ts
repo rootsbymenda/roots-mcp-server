@@ -7,6 +7,42 @@ function escapeLike(s: string): string {
   return s.replace(/[%_\\]/g, '\\$&');
 }
 
+const MAX_QUERY_LENGTH = 120;
+const MAX_QUERY_INPUT_LENGTH = 200;
+const MAX_NAME_LENGTH = 50;
+const MAX_BATCH_INPUT_LENGTH = 4_000;
+const MAX_FORMULA_INGREDIENTS = 50;
+const MAX_SEARCH_RESULTS = 20;
+const COSMETIC_JURISDICTIONS = [
+  "EU",
+  "US",
+  "US_FDA",
+  "CN",
+  "China",
+  "CA",
+  "Canada_Hotlist",
+  "KR",
+  "Korea_MFDS",
+  "JP",
+  "Japan_MHLW",
+  "BR",
+  "ASEAN",
+  "GCC",
+  "Saudi_SFDA",
+  "AU",
+  "Australia_SUSMP",
+  "IN",
+  "UK",
+] as const;
+
+function normalizeQuery(input: string, maxLength = MAX_QUERY_LENGTH): string {
+  return input.trim().replace(/\s+/g, " ").slice(0, maxLength);
+}
+
+function likePattern(input: string): string {
+  return `%${escapeLike(input)}%`;
+}
+
 function ingredientSlug(ingredient: Record<string, unknown>): string {
   const base = String(ingredient.key || ingredient.inci || ingredient.name || ingredient.cas || "");
   return base
@@ -136,33 +172,87 @@ function boundsErrorResponse(message: string) {
 
 // --- End auth ---
 
+const SERVER_VERSION = "1.1.3";
+const HOMEPAGE = "https://rootsbybenda.com";
+const SOURCE = "Roots by Benda \u2014 rootsbybenda.com";
+const CONTACT = "SBD@effortlessai.ai";
+const SERVER_NAME = "Roots by Benda \u2014 Cosmetic Intelligence";
+const SERVER_DESCRIPTION =
+  "Roots by Benda answers whether an ingredient is safe in a cosmetic formula by checking 30,553 ingredients, 174,973 NOAEL studies, 99,535 pre-calculated MoS values, and 55+ jurisdiction signals for CPSR, SCCS, INCI, NOAEL, and Margin of Safety work. It is a free, source-linked cosmetic safety MCP with the only pre-calculated SCCS-style MoS layer; ask your AI: 'check if niacinamide is safe for cosmetic use'.";
+const DATA_CATALOG = {
+  ingredients: "30,553",
+  noael_studies: "174,973",
+  calculated_mos: "99,535",
+  sensitization_assays: "8,898",
+  jurisdictions: "55+",
+};
+const TOOL_CATALOG = [
+  {
+    name: "check_ingredient",
+    description:
+      "Look up a cosmetic ingredient by common name, INCI, or CAS number. Returns SCCS safety opinions, EU/US/regional restrictions, NOAEL evidence, sensitization, endocrine-disruptor flags, SVHC status, and pre-calculated Margin of Safety data for cosmetic safety assessment.",
+  },
+  {
+    name: "check_formula",
+    description:
+      "Scan a full cosmetic INCI list for compliance and safety risk. Returns per-ingredient matches, restricted or banned substances, jurisdiction-specific flags, and an overall LOW/MODERATE/HIGH formula risk assessment for CPSR and product review workflows.",
+  },
+  {
+    name: "search_ingredients",
+    description:
+      "Search cosmetic ingredients by partial name, function, or category. Use when an AI agent needs to discover candidate INCI names before running a deeper ingredient or formula safety check.",
+  },
+  {
+    name: "calculate_mos",
+    description:
+      "Calculate cosmetic Margin of Safety using SCCS-style exposure methodology. Returns SED, MoS, pass/fail against the SCCS safety threshold, NOAEL source, dermal absorption basis, and exposure assumptions.",
+  },
+];
+
+function registryMetadata() {
+  return {
+    name: SERVER_NAME,
+    description: SERVER_DESCRIPTION,
+    version: SERVER_VERSION,
+    mcp_endpoint: "/mcp",
+    tools: TOOL_CATALOG,
+    data: DATA_CATALOG,
+    homepage: HOMEPAGE,
+    source: SOURCE,
+    contact: CONTACT,
+  };
+}
+
 export class RootsMCP extends McpAgent<Env> {
   // @ts-expect-error agents bundles its own MCP SDK copy; runtime server shape is compatible.
   server = new McpServer({
     name: "roots-by-benda",
-    version: "1.1.3",
+    version: SERVER_VERSION,
   });
 
   async init() {
     // Tool 1: check_ingredient — lookup by name, INCI, or CAS number
     this.server.tool(
       "check_ingredient",
-      "Use this tool when the user asks about the safety, regulatory status, or compliance of a cosmetic ingredient under EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, ECHA SVHC, California Prop 65, California TFCA, or Washington TFCA. Accepts common name, INCI name (e.g. 'Retinol', 'Sodium Lauryl Sulfate'), or CAS number (e.g. '68-26-8', '151-21-3'). Returns: SCCS safety opinion, EU Annex II/III/V/VI classification, pre-calculated Margin of Safety (MoS) value, NOAEL reference, dermal absorption, sensitization profile, CIR conclusion, endocrine-disruptor status, ECHA SVHC listing, China IECIC status, and jurisdiction-specific restrictions across 12 regulatory bodies. Backed by 884,345 rows of primary-source-traceable data from rootsbybenda.com. Do not use for general chemistry queries unrelated to cosmetic ingredient compliance.",
+      TOOL_CATALOG[0].description,
       {
         query: z
           .string()
+          .trim()
+          .min(1)
+          .max(MAX_QUERY_INPUT_LENGTH)
           .describe(
             "Common name (e.g. 'Retinol'), INCI name (International Nomenclature of Cosmetic Ingredients — the standard EU/ISO identifier defined in Regulation (EC) No 1223/2009, e.g. 'RETINOL'), or CAS number (Chemical Abstracts Service registry number, e.g. '68-26-8'). INCI is the preferred format for exact matching."
           ),
         jurisdiction: z
-          .string()
+          .enum(COSMETIC_JURISDICTIONS)
           .optional()
           .describe(
             "Optional filter for jurisdiction_restrictions table. Legacy codes accepted: 'EU', 'US', 'CN', 'CA', 'KR', 'JP', 'BR', 'ASEAN', 'GCC', 'AU', 'IN', 'UK'. If omitted, the response still includes the full jurisdictional_profile across all 12 supported regulatory bodies from jurisdictional_status — use that instead for multi-jurisdiction queries."
           ),
       },
       async ({ query, jurisdiction }) => {
-        const q = query.trim();
+        const q = normalizeQuery(query);
 
         // Try exact key match first, then CAS, then INCI, then fuzzy name
         let ingredient = await this.env.DB.prepare(
@@ -188,11 +278,10 @@ export class RootsMCP extends McpAgent<Env> {
         }
 
         if (!ingredient) {
-          const qEsc = escapeLike(q);
           ingredient = await this.env.DB.prepare(
             `SELECT * FROM ingredients WHERE name LIKE ? ESCAPE '\\' COLLATE NOCASE LIMIT 1`
           )
-            .bind(`%${qEsc}%`)
+            .bind(likePattern(q))
             .first();
         }
 
@@ -628,15 +717,18 @@ export class RootsMCP extends McpAgent<Env> {
     // Tool 2: check_formula — batch check a list of ingredients
     this.server.tool(
       "check_formula",
-      "Use this tool when the user provides an INCI deck, product formula, or ingredient list (comma or newline separated, up to 50 items) and wants a one-shot compliance scan for a finished cosmetic product. Returns per-ingredient regulatory status, flagged restricted/banned substances with jurisdiction-specific citations, overall formula risk level (LOW / MODERATE / HIGH), and actionable compliance notes. Coverage: EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, and 4 additional US-state jurisdictions (California Prop 65, California TFCA, Washington TFCA) via the jurisdictional_status table. Do not use for single-ingredient lookups — use check_ingredient for that; use this only for batch compliance review of a full formula.",
+      TOOL_CATALOG[1].description,
       {
         ingredients: z
           .string()
+          .trim()
+          .min(1)
+          .max(MAX_BATCH_INPUT_LENGTH)
           .describe(
             "Comma-separated or newline-separated list of INCI ingredient names (e.g. 'Aqua, Retinol, Cetearyl Alcohol, Titanium Dioxide, Phenoxyethanol'). Max 50 ingredients per call. Typical usage: paste an INCI declaration straight from a product label."
           ),
         jurisdiction: z
-          .string()
+          .enum(COSMETIC_JURISDICTIONS)
           .optional()
           .describe(
             "Optional target jurisdiction for compliance focus. Supported codes: 'EU' (Regulation 1223/2009), 'US' / 'US_FDA', 'Korea_MFDS', 'Japan_MHLW', 'ASEAN', 'Saudi_SFDA', 'Canada_Hotlist', 'Australia_SUSMP'. Legacy codes 'CN', 'CA', 'KR', 'JP', 'BR', 'GCC', 'AU', 'IN', 'UK' accepted for backward compat. If omitted, defaults to EU + US multi-jurisdiction scan."
@@ -645,7 +737,7 @@ export class RootsMCP extends McpAgent<Env> {
       async ({ ingredients, jurisdiction }) => {
         const names = ingredients
           .split(/[,\n]+/)
-          .map((n) => n.trim())
+          .map((n) => normalizeQuery(n, MAX_NAME_LENGTH))
           .filter(Boolean);
 
         if (names.length === 0) {
@@ -662,7 +754,7 @@ export class RootsMCP extends McpAgent<Env> {
           };
         }
 
-        if (names.length > 50) {
+        if (names.length > MAX_FORMULA_INGREDIENTS) {
           return {
             content: [
               {
@@ -670,7 +762,7 @@ export class RootsMCP extends McpAgent<Env> {
                 text: JSON.stringify({
                   error: "too_many",
                   message:
-                    "Maximum 50 ingredients per request. Split into multiple calls.",
+                    `Maximum ${MAX_FORMULA_INGREDIENTS} ingredients per request. Split into multiple calls.`,
                 }),
               },
             ],
@@ -857,21 +949,28 @@ export class RootsMCP extends McpAgent<Env> {
     // Tool 3: search_ingredients — full-text search across the database
     this.server.tool(
       "search_ingredients",
-      "Use this tool when the user doesn't know the exact INCI name and wants to discover cosmetic ingredients by partial name, function (e.g. 'sunscreen', 'emulsifier', 'preservative', 'surfactant'), or category (e.g. 'humectant', 'UV filter', 'antioxidant'). Returns up to 20 matches per query with INCI name, CAS number, functional category, safety rating, EU status, and concern level. Fast discovery tool — best for identifying candidate ingredients before deep-diving with check_ingredient. Do not use for known INCI lookups (use check_ingredient directly); do not use for batch compliance (use check_formula).",
+      TOOL_CATALOG[2].description,
       {
         query: z
           .string()
+          .trim()
+          .min(1)
+          .max(MAX_QUERY_INPUT_LENGTH)
           .describe(
             "Search keyword matching ingredient name (partial), function, or category. Examples: 'sunscreen' (returns UV filters), 'preservative' (returns parabens, phenoxyethanol, etc.), 'retinoid' (returns retinol family), 'hyaluronic' (returns HA derivatives)."
           ),
         limit: z
           .number()
+          .finite()
+          .min(1)
+          .max(MAX_SEARCH_RESULTS)
           .optional()
           .describe("Max results to return (1-20, default 10). Use higher limits for broad exploratory queries; lower limits for specific searches."),
       },
       async ({ query, limit }) => {
-        const maxResults = Math.min(Math.max(limit || 10, 1), 20);
-        const queryEsc = escapeLike(query);
+        const maxResults = Math.min(Math.max(limit || 10, 1), MAX_SEARCH_RESULTS);
+        const q = normalizeQuery(query);
+        const pattern = likePattern(q);
 
         const results = await this.env.DB.prepare(
           `SELECT name, inci, cas, function, safety, eu_status, concern, noael_value
@@ -883,10 +982,10 @@ export class RootsMCP extends McpAgent<Env> {
            LIMIT ?`
         )
           .bind(
-            `%${queryEsc}%`,
-            `%${queryEsc}%`,
-            `%${queryEsc}%`,
-            `%${queryEsc}%`,
+            pattern,
+            pattern,
+            pattern,
+            pattern,
             maxResults
           )
           .all();
@@ -924,27 +1023,42 @@ export class RootsMCP extends McpAgent<Env> {
     // Tool 4: calculate_mos — Margin of Safety calculation per SCCS guidelines
     this.server.tool(
       "calculate_mos",
-      "Use this tool when the user needs a Margin of Safety (MoS) calculation for cosmetic safety assessment, CPSR (Cosmetic Product Safety Report) documentation, or regulatory submission under SCCS Notes of Guidance (SCCS/1647/22) methodology. Computes SED (Systemic Exposure Dose, mg/kg bw/day) from NOAEL, dermal absorption, product type exposure parameters, and use concentration, then MoS = NOAEL / SED. SCCS safety threshold is MoS > 100 for acceptable consumer risk. Returns SED, MoS value, pass/fail against SCCS-100 threshold, and full calculation trace including NOAEL source, dermal absorption basis, and SCCS exposure parameters used. Do not use for general toxicology or non-cosmetic safety margin queries — this is specifically the SCCS-methodology MoS calculation for cosmetic ingredients.",
+      TOOL_CATALOG[3].description,
       {
         ingredient: z
           .string()
+          .trim()
+          .min(1)
+          .max(MAX_NAME_LENGTH)
           .describe(
             "Ingredient name, INCI name, or CAS number (e.g. 'retinol', '68-26-8')"
           ),
         concentration: z
           .number()
+          .finite()
+          .min(0.000001)
+          .max(100)
           .describe("Concentration of ingredient in the product (%, e.g. 0.5 for 0.5%)"),
         product_type: z
           .string()
+          .trim()
+          .min(1)
+          .max(MAX_NAME_LENGTH)
           .describe(
             "Product type (e.g. 'body lotion', 'shampoo', 'lipstick', 'face cream', 'hand cream', 'shower gel', 'toothpaste', 'mouthwash', 'hair styling', 'deodorant')"
           ),
         body_weight: z
           .number()
+          .finite()
+          .min(1)
+          .max(500)
           .optional()
           .describe("Body weight in kg (default: 60 for adults)"),
         dermal_absorption: z
           .number()
+          .finite()
+          .min(0)
+          .max(100)
           .optional()
           .describe(
             "Dermal absorption percentage override (if known from studies). If not provided, uses SCCS default of 50%."
@@ -967,15 +1081,14 @@ export class RootsMCP extends McpAgent<Env> {
         const bw = body_weight || 60;
 
         // 1. Look up the ingredient for NOAEL
-        const q = ingredient.trim();
-        const qEsc = escapeLike(q);
+        const q = normalizeQuery(ingredient, MAX_NAME_LENGTH);
         const ing = await this.env.DB.prepare(
           `SELECT name, cas, noael_value, dermal_absorption as da
            FROM ingredients
            WHERE name LIKE ? ESCAPE '\\' COLLATE NOCASE OR inci LIKE ? ESCAPE '\\' COLLATE NOCASE OR cas = ?
            LIMIT 1`
         )
-          .bind(`%${qEsc}%`, `%${qEsc}%`, q)
+          .bind(likePattern(q), likePattern(q), q)
           .first();
 
         // Also check noael_studies for the best NOAEL
@@ -993,18 +1106,18 @@ export class RootsMCP extends McpAgent<Env> {
                     CAST(value AS REAL) ASC
            LIMIT 1`
         )
-          .bind(`%${qEsc}%`)
+          .bind(likePattern(q))
           .first();
 
         // 2. Look up SCCS exposure parameters for product type
-        const ptEsc = escapeLike(product_type.trim());
+        const productType = normalizeQuery(product_type, MAX_NAME_LENGTH);
         const exposure = await this.env.DB.prepare(
           `SELECT * FROM sccs_exposure_parameters
            WHERE product_type LIKE ? ESCAPE '\\' COLLATE NOCASE
               OR product_category LIKE ? ESCAPE '\\' COLLATE NOCASE
            LIMIT 1`
         )
-          .bind(`%${ptEsc}%`, `%${ptEsc}%`)
+          .bind(likePattern(productType), likePattern(productType))
           .first();
 
         // Get NOAEL value
@@ -1033,12 +1146,12 @@ export class RootsMCP extends McpAgent<Env> {
         // Get exposure parameters
         let dailyExposure = 0;
         let retentionFactor = 1;
-        let productLabel = product_type;
+        let productLabel = productType;
 
         if (exposure) {
           dailyExposure = parseFloat(String(exposure.estimated_daily_amount_g_per_day || exposure.calculated_daily_exposure_g_per_day || 0));
           retentionFactor = parseFloat(String(exposure.retention_factor || 1));
-          productLabel = String(exposure.product_type || product_type);
+          productLabel = String(exposure.product_type || productType);
         } else {
           // Default values if product type not found
           const defaults: Record<string, [number, number]> = {
@@ -1059,7 +1172,7 @@ export class RootsMCP extends McpAgent<Env> {
           };
 
           const key = Object.keys(defaults).find(k =>
-            product_type.toLowerCase().includes(k)
+            productType.toLowerCase().includes(k)
           );
           if (key) {
             dailyExposure = defaults[key][0];
@@ -1159,42 +1272,41 @@ export default {
 
     // Health check
     if (url.pathname === "/" || url.pathname === "/health") {
-      return new Response(
-        JSON.stringify({
-          name: "Roots by Benda MCP Server",
-          version: "1.1.3",
-          status: "healthy",
-          tools: ["check_ingredient", "check_formula", "search_ingredients", "calculate_mos"],
-          data: {
-            ingredients: "30,553",
-            noael_studies: "174,973",
-            calculated_mos: "99,535",
-            sensitization_assays: "8,898",
-            jurisdictions: "55+",
-          },
-          docs: "https://rootsbybenda.com",
-        }),
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      return Response.json({
+        name: SERVER_NAME,
+        version: SERVER_VERSION,
+        status: "healthy",
+        description: SERVER_DESCRIPTION,
+        tools: TOOL_CATALOG.map((tool) => tool.name),
+        data: DATA_CATALOG,
+        docs: HOMEPAGE,
+        homepage: HOMEPAGE,
+        source: SOURCE,
+      });
     }
+
 
     // SEP-1649 server-card discovery.
     // Tools are listed statically so SmitheryBot can enumerate without auth.
+    if (url.pathname === "/.well-known/mcp/server.json") {
+      return Response.json(registryMetadata(), {
+        headers: { "Cache-Control": "public, max-age=300" },
+      });
+    }
+
     if (url.pathname === "/.well-known/mcp/server-card.json") {
       return Response.json({
         "$schema": "https://static.modelcontextprotocol.io/schemas/mcp-server-card/v1.json",
         "version": "1.0",
         "protocolVersion": "2025-06-18",
-        "serverInfo": { "name": "roots-mcp-server", "title": "Roots by Benda MCP Server", "version": "1.1.3" },
-        "description": "Cosmetic ingredient safety MCP — primary-source-verified regulatory + MoS data",
+        "serverInfo": { "name": "roots-mcp-server", "title": SERVER_NAME, "version": SERVER_VERSION },
+        "description": SERVER_DESCRIPTION,
         "iconUrl": "https://rootsbybenda.com/icon.png",
         "documentationUrl": "https://rootsbybenda.com",
         "transport": { "type": "streamable-http", "endpoint": "/mcp" },
         "capabilities": { "tools": { "listChanged": true }, "resources": { "subscribe": false, "listChanged": false } },
         "authentication": { "required": false, "schemes": ["bearer"] },
-        "tools": ["check_ingredient", "check_formula", "search_ingredients", "calculate_mos"]
+        "tools": TOOL_CATALOG
       }, { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300" } });
     }
 

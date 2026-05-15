@@ -1,3 +1,5 @@
+description: >-
+  Is this ingredient safe in my cosmetic formula? Roots by Benda checks 30,553 ingredients, 174,973 NOAEL studies, 99,535 pre-calculated Margin of Safety values, 8,898 sensitization assays, and 55+ jurisdiction signals across CPSR, SCCS, INCI, NOAEL, and MoS workflows. The only cosmetic MCP with pre-calculated Margin of Safety using SCCS-style methodology. Ask your AI: 'check if niacinamide is safe for cosmetic use'. Built by one human + Claude. Free. Source-linked.
 startCommand:
   type: "http"
   configSchema:
