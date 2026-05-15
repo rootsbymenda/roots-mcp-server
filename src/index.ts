@@ -1,4 +1,4 @@
-import { McpAgent, getMcpAuthContext } from "agents/mcp";
+import { McpAgent } from "agents/mcp";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
@@ -7,25 +7,26 @@ function escapeLike(s: string): string {
   return s.replace(/[%_\\]/g, '\\$&');
 }
 
+function ingredientSlug(ingredient: Record<string, unknown>): string {
+  const base = String(ingredient.key || ingredient.inci || ingredient.name || ingredient.cas || "");
+  return base
+    .toLowerCase()
+    .replace(/_/g, "-")
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 interface Env {
   DB: D1Database;
   MCP_OBJECT: DurableObjectNamespace;
-  // Auth env — required for Pro-tier gating. See KAIROS #41 audit_codex_rescue ledger
-  // and HARD RULE #2 (no-premium-data-leakage). Without these, every caller is treated
-  // as free tier (under-grant by design — better than over-granting premium data).
   MCP_KEY_SECRET?: string;
-  SUPABASE_URL?: string;
-  SUPABASE_SERVICE_ROLE_KEY?: string;
 }
 
-// --- Auth: HMAC-validated MCP key + Supabase plan lookup ---
+// --- Auth: HMAC-validated MCP key ---
 // MCP keys are issued by rootsbybenda-site/functions/api/mcp-key.js using the
 // SAME MCP_KEY_SECRET. Format: mcp_<base64url(user_id)>_<sha256_hmac[:32]>.
-// Free callers (no key, invalid key, non-paid plan) get public-source data only;
-// premium computed values (MoS, NOAEL, dermal absorption, formulation risk) are
-// gated per HARD RULE #2.
+// Auth is optional and only provides a stable user_id for future observability.
 
-const PAID_PLANS = new Set(["starter", "trial", "professional", "enterprise"]);
 const RATE_LIMIT_PER_MINUTE = 60;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -50,9 +51,8 @@ function rateLimitResponse(): Response {
 }
 
 interface AuthProps extends Record<string, unknown> {
-  tier: "paid" | "free";
   user_id: string | null;
-  plan: string;
+  authenticated: boolean;
 }
 
 function base64urlDecodeToString(b64url: string): string {
@@ -82,140 +82,44 @@ function constantTimeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
-/**
- * Validate Authorization: Bearer mcp_<...>_<...> against MCP_KEY_SECRET, then
- * look up profile.plan in Supabase. Returns the effective tier ("paid" / "free")
- * plus user_id + plan. Anonymous / invalid / non-paid → tier "free".
- *
- * Designed to under-grant on every error path: missing secret, missing Supabase
- * config, lookup failures all return free tier rather than crashing or silently
- * granting paid access.
- */
 async function resolveAuth(request: Request, env: Env): Promise<AuthProps> {
   const authHeader = request.headers.get("Authorization") || "";
   const match = authHeader.match(/^Bearer\s+(mcp_[A-Za-z0-9_-]+_[a-f0-9]{32})\s*$/i);
-  if (!match) return { tier: "free", user_id: null, plan: "anonymous" };
+  if (!match) return { user_id: null, authenticated: false };
 
   const key = match[1];
   const parts = key.split("_");
   if (parts.length !== 3 || parts[0] !== "mcp") {
-    return { tier: "free", user_id: null, plan: "anonymous" };
+    return { user_id: null, authenticated: false };
   }
   const userIdB64 = parts[1];
   const providedHmac = parts[2].toLowerCase();
 
   if (!env.MCP_KEY_SECRET) {
     console.error("resolveAuth: MCP_KEY_SECRET not configured");
-    return { tier: "free", user_id: null, plan: "anonymous" };
+    return { user_id: null, authenticated: false };
   }
 
   let userId: string;
   try {
     userId = base64urlDecodeToString(userIdB64);
   } catch {
-    return { tier: "free", user_id: null, plan: "anonymous" };
+    return { user_id: null, authenticated: false };
   }
-  if (!userId) return { tier: "free", user_id: null, plan: "anonymous" };
+  if (!userId) return { user_id: null, authenticated: false };
 
   const computed = (await hmacSha256Hex(userId, env.MCP_KEY_SECRET)).slice(0, 32);
   if (!constantTimeEqual(computed, providedHmac)) {
-    return { tier: "free", user_id: null, plan: "anonymous" };
+    return { user_id: null, authenticated: false };
   }
 
-  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
-    console.error("resolveAuth: Supabase env not configured — falling through to free tier");
-    return { tier: "free", user_id: null, plan: "anonymous" };
-  }
-
-  // Admin override by email
-  let userEmail: string | null = null;
-  try {
-    const userRes = await fetch(
-      `${env.SUPABASE_URL}/auth/v1/admin/users/${userId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
-          apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-        },
-      }
-    );
-    if (userRes.ok) {
-      const user = (await userRes.json()) as { email?: string };
-      userEmail = user.email || null;
-    }
-  } catch (e) {
-    console.error("resolveAuth: admin user lookup failed", e);
-  }
-
-  const adminEmails = (env as any).ADMIN_EMAILS ? String((env as any).ADMIN_EMAILS).split(",") : [];
-  if (userEmail && adminEmails.includes(userEmail)) {
-    return { tier: "paid", user_id: userId, plan: "enterprise" };
-  }
-
-  let plan = "free";
-  try {
-    const profileRes = await fetch(
-      `${env.SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=plan`,
-      {
-        headers: {
-          Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
-          apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-        },
-      }
-    );
-    if (profileRes.ok) {
-      const profiles = (await profileRes.json()) as Array<{ plan?: string }>;
-      if (profiles.length > 0 && profiles[0].plan) {
-        const raw = profiles[0].plan;
-        const dbPlan = raw === "pro" ? "professional" : raw;
-        if (PAID_PLANS.has(dbPlan)) {
-          return { tier: "paid", user_id: userId, plan: dbPlan };
-        }
-        plan = dbPlan;
-      }
-    }
-  } catch (e) {
-    console.error("resolveAuth: profile lookup failed", e);
-  }
-
-  return { tier: "free", user_id: userId, plan };
-}
-
-/**
- * Read the auth context that the Worker fetch handler set on ctx.props.
- * Returns true if the caller's HMAC validated AND their plan is in PAID_PLANS
- * (or admin email override). False on any other condition — no-key, invalid key,
- * Supabase-down, free plan. Use to gate premium-field emission per HARD RULE #2.
- */
-function isPaid(): boolean {
-  const auth = getMcpAuthContext();
-  return (auth?.props as AuthProps | undefined)?.tier === "paid";
-}
-
-/**
- * Standard upgrade-required response for tools that have no free-tier function
- * (calculate_mos is the only one currently — it's a Roots-computed value, not
- * public regulatory data).
- */
-function upgradeRequiredResponse(tool: string) {
-  return {
-    content: [{
-      type: "text" as const,
-      text: JSON.stringify({
-        error: "subscription_required",
-        message: `${tool} requires a Roots Pro subscription (Starter / Professional / Enterprise / Trial). Premium computed values like Margin of Safety synthesis are gated; public regulatory data remains available via check_ingredient and search_ingredients on the free tier.`,
-        upgrade_url: "https://rootsbybenda.com/pricing",
-        get_api_key: "https://rootsbybenda.com/account/api-key",
-        source: "Roots by Benda — rootsbybenda.com",
-      }),
-    }],
-  };
+  return { user_id: userId, authenticated: true };
 }
 
 /**
  * Input bounds error — K40 audit P0 fix on calculate_mos (concentration / body_weight /
  * dermal_absorption could be 0, negative, or non-finite producing Infinity MoS).
- * Returns 400-class structured error WITHOUT computing or returning any premium data.
+ * Returns a structured error without computing invalid input.
  */
 function boundsErrorResponse(message: string) {
   return {
@@ -230,33 +134,10 @@ function boundsErrorResponse(message: string) {
   };
 }
 
-/**
- * Strip Roots-computed premium fields from a check_ingredient result for free
- * callers. Public-source values (regulatory status, jurisdictional profile,
- * SVHC, allergen, IFRA, CIR conclusion enum) display freely per the April 11
- * `no-premium-data-leakage` revision — these ARE the SEO moat. Only
- * Roots-synthesized values gate.
- */
-function stripPremiumFields(result: Record<string, unknown>): Record<string, unknown> {
-  const out: Record<string, unknown> = { ...result };
-  delete out.safety_data;
-  delete out.mos_calculations;
-  delete out.sccs_noael_values;
-  delete out.dermal_penetration;
-  // Keep: name, inci, cas, function, category, safety_rating, concern_level,
-  //       regulatory, expert_verdict, regulatory_flags, noael_studies (public
-  //       SCCS extracted), safety_opinions, eu_allergen, ifra_standard,
-  //       echa_svhc, endocrine_disruptor, china_iecic, jurisdictional_profile,
-  //       cir_conclusion, sensitization_profile, jurisdiction_*, source.
-  out._gated = true;
-  out._gated_fields = ["safety_data", "mos_calculations", "sccs_noael_values", "dermal_penetration"];
-  out._upgrade_url = "https://rootsbybenda.com/pricing";
-  out._get_api_key = "https://rootsbybenda.com/account/api-key";
-  return out;
-}
 // --- End auth ---
 
 export class RootsMCP extends McpAgent<Env> {
+  // @ts-expect-error agents bundles its own MCP SDK copy; runtime server shape is compatible.
   server = new McpServer({
     name: "roots-by-benda",
     version: "1.1.3",
@@ -281,8 +162,6 @@ export class RootsMCP extends McpAgent<Env> {
           ),
       },
       async ({ query, jurisdiction }) => {
-        const paid = isPaid();
-
         const q = query.trim();
 
         // Try exact key match first, then CAS, then INCI, then fuzzy name
@@ -442,18 +321,14 @@ export class RootsMCP extends McpAgent<Env> {
              FROM sensitization_profiles WHERE inci_name = ? COLLATE NOCASE LIMIT 1`
           ).bind(inci || nameStr).first(),
 
-          // 12. MoS calculations — DEFER-BY-REMOVAL for free tier per K40 audit P0
-          // recommendation (HR-1: don't fetch then strip — gate at the query layer
-          // so timing/error vectors can't leak premium row counts).
-          paid
-            ? this.env.DB.prepare(
-                `SELECT noael_mg_kg_day, noael_study_source, noael_study_type, noael_species_route,
-                        dermal_absorption_pct, dermal_absorption_method, sed_mg_kg_day, mos_value, mos_adequate,
-                        product_type, max_use_concentration_pct, safety_conclusion, sccs_opinion_number, year, notes
-                 FROM mos_calculations WHERE inci_name = ? COLLATE NOCASE OR cas_number = ?
-                 ORDER BY year DESC LIMIT 5`
-              ).bind(inci || nameStr, cas).all()
-            : Promise.resolve({ results: [] as Record<string, unknown>[] }),
+          // 12. MoS calculations
+          this.env.DB.prepare(
+            `SELECT noael_mg_kg_day, noael_study_source, noael_study_type, noael_species_route,
+                    dermal_absorption_pct, dermal_absorption_method, sed_mg_kg_day, mos_value, mos_adequate,
+                    product_type, max_use_concentration_pct, safety_conclusion, sccs_opinion_number, year, notes
+             FROM mos_calculations WHERE inci_name = ? COLLATE NOCASE OR cas_number = ?
+             ORDER BY year DESC LIMIT 5`
+          ).bind(inci || nameStr, cas).all(),
 
           // 13. SCCS NOAEL database
           this.env.DB.prepare(
@@ -498,6 +373,7 @@ export class RootsMCP extends McpAgent<Env> {
           cas: ingredient.cas,
           function: ingredient.function,
           category: ingredient.category,
+          detail_url: `https://rootsbybenda.com/ingredients/${ingredientSlug(ingredient as Record<string, unknown>)}`,
           safety_rating: ingredient.safety,
           concern_level: ingredient.concern,
           concern_reason: ingredient.concern_reason || null,
@@ -743,15 +619,8 @@ export class RootsMCP extends McpAgent<Env> {
           };
         }
 
-        // HARD RULE #2 tier gating: strip Roots-computed premium fields
-        // (safety_data block, mos_calculations, sccs_noael_values, dermal_penetration)
-        // for free callers. Public-source data (regulatory, jurisdictional, allergen,
-        // SVHC, CIR conclusion enum, NOAEL studies extracted) stays — these ARE the
-        // SEO moat per the April 11 no-premium-data-leakage revision.
-        const finalResult = paid ? result : stripPremiumFields(result);
-
         return {
-          content: [{ type: "text" as const, text: JSON.stringify(finalResult, null, 2) }],
+          content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
         };
       }
     );
@@ -774,8 +643,6 @@ export class RootsMCP extends McpAgent<Env> {
           ),
       },
       async ({ ingredients, jurisdiction }) => {
-        const paid = isPaid();
-
         const names = ingredients
           .split(/[,\n]+/)
           .map((n) => n.trim())
@@ -855,9 +722,8 @@ export class RootsMCP extends McpAgent<Env> {
               eu_max: ingredient.eu_max || null,
               us_status: ingredient.us_status,
               flags,
+              noael: ingredient.noael_value || null,
             };
-            // HARD RULE #2 (K40 audit HR-3): noael_value is Roots-computed premium content
-            if (paid) entry.noael = ingredient.noael_value || null;
 
             // Check jurisdiction-specific restrictions if jurisdiction is provided
             if (jurisdiction) {
@@ -959,36 +825,26 @@ export class RootsMCP extends McpAgent<Env> {
           jurisdiction_checked: jurisdiction || "EU + US (default)",
           source: "Roots by Benda — rootsbybenda.com",
         };
-        if (paid) {
-          // HARD RULE #2 (K40 audit HR-3): formula-level risk synthesis is Roots-
-          // computed premium content. Free callers see per-ingredient public regulatory
-          // status only — no overall risk_level, no flagged_ingredients reasoning.
-          summary.risk_level =
-            flagged.length === 0
-              ? "LOW"
-              : flagged.length <= 2
-                ? "MODERATE"
-                : "HIGH";
-          summary.flagged_ingredients = flagged.map((f) => {
-            const reasons: string[] = [];
-            if (f.eu_status) reasons.push(`EU: ${f.eu_status}`);
-            if (f.concern) reasons.push(`concern: ${f.concern}`);
-            if (Array.isArray(f.jurisdiction_restrictions)) {
-              (f.jurisdiction_restrictions as Record<string, unknown>[]).forEach((jr) => {
-                reasons.push(`${jurisdiction?.toUpperCase()}: ${jr.status}${jr.max_concentration ? ` (max ${jr.max_concentration}%)` : ""}`);
-              });
-            }
-            if (f.china_iecic && (f.china_iecic as Record<string, unknown>).status === "NOT_LISTED") {
-              reasons.push("CN: NOT in IECIC — requires new ingredient registration");
-            }
-            return { name: f.matched, reason: reasons.join(", ") };
-          });
-        } else {
-          summary._gated = true;
-          summary._gated_fields = ["risk_level", "flagged_ingredients", "noael"];
-          summary._upgrade_url = "https://rootsbybenda.com/pricing";
-          summary._get_api_key = "https://rootsbybenda.com/account/api-key";
-        }
+        summary.risk_level =
+          flagged.length === 0
+            ? "LOW"
+            : flagged.length <= 2
+              ? "MODERATE"
+              : "HIGH";
+        summary.flagged_ingredients = flagged.map((f) => {
+          const reasons: string[] = [];
+          if (f.eu_status) reasons.push(`EU: ${f.eu_status}`);
+          if (f.concern) reasons.push(`concern: ${f.concern}`);
+          if (Array.isArray(f.jurisdiction_restrictions)) {
+            (f.jurisdiction_restrictions as Record<string, unknown>[]).forEach((jr) => {
+              reasons.push(`${jurisdiction?.toUpperCase()}: ${jr.status}${jr.max_concentration ? ` (max ${jr.max_concentration}%)` : ""}`);
+            });
+          }
+          if (f.china_iecic && (f.china_iecic as Record<string, unknown>).status === "NOT_LISTED") {
+            reasons.push("CN: NOT in IECIC — requires new ingredient registration");
+          }
+          return { name: f.matched, reason: reasons.join(", ") };
+        });
 
         return {
           content: [
@@ -1014,10 +870,6 @@ export class RootsMCP extends McpAgent<Env> {
           .describe("Max results to return (1-20, default 10). Use higher limits for broad exploratory queries; lower limits for specific searches."),
       },
       async ({ query, limit }) => {
-        // Public discovery — no tier gate. Per April 11 no-premium-data-leakage
-        // revision, INCI/CAS/function/category/safety enum are public-source fields.
-        // The has_noael boolean is metadata, not the gated value itself.
-
         const maxResults = Math.min(Math.max(limit || 10, 1), 20);
         const queryEsc = escapeLike(query);
 
@@ -1099,10 +951,6 @@ export class RootsMCP extends McpAgent<Env> {
           ),
       },
       async ({ ingredient, concentration, product_type, body_weight, dermal_absorption }) => {
-        // HARD RULE #2: calculate_mos IS the formulation risk tool — Roots-computed
-        // premium content. No free-tier fallback (K40 audit HR-3, HR-4).
-        if (!isPaid()) return upgradeRequiredResponse("calculate_mos");
-
         // Input bounds — K40 audit P0 (calculate_mos:913-927 unsafe numeric inputs).
         // Reject zero/negative/non-finite values that produce Infinity or fabricated
         // safety conclusions on garbage input.
@@ -1332,8 +1180,8 @@ export default {
       );
     }
 
-    // SEP-1649 server-card discovery — authentication optional (free tier supported, bearer for Pro);
-    // tools listed statically so SmitheryBot can enumerate without auth (gating happens at tool RESPONSE level).
+    // SEP-1649 server-card discovery.
+    // Tools are listed statically so SmitheryBot can enumerate without auth.
     if (url.pathname === "/.well-known/mcp/server-card.json") {
       return Response.json({
         "$schema": "https://static.modelcontextprotocol.io/schemas/mcp-server-card/v1.json",
@@ -1350,10 +1198,7 @@ export default {
       }, { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300" } });
     }
 
-    // Resolve auth tier from Authorization: Bearer mcp_<...> header BEFORE dispatching
-    // to MCP transport. Set on ctx.props so getMcpAuthContext() returns it inside
-    // tool handlers (per agents/mcp framework convention — `If not provided, the
-    // handler will look for props in the execution context.`).
+    // Resolve optional HMAC auth before dispatching to MCP transport.
     if (url.pathname === "/sse" || url.pathname.startsWith("/sse/") || url.pathname === "/mcp") {
       const auth = await resolveAuth(request, env);
       (ctx as ExecutionContext & { props?: AuthProps }).props = auth;

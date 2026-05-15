@@ -6,7 +6,7 @@ startCommand:
       rootsApiKey:
         type: "string"
         title: "Roots API Key"
-        description: "Required for Pro-tier features (Margin of Safety calculations, premium safety synthesis, formulation risk tool). Get yours at https://rootsbybenda.com/account/api-key after subscribing at https://rootsbybenda.com/pricing. Free tier connects without a key and receives public regulatory data only."
+        description: "Optional. Supplies a stable user_id for per-user rate limiting; all tools return full data without monetization gates."
         x-from: "header"
         x-to:
           header: "Authorization"

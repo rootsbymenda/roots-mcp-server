@@ -6,7 +6,6 @@ Equivalent data licensed from commercial providers (Coptis, CosmEthics) runs €
 
 **Live endpoint:** `https://roots-mcp-server.rootsbybenda.workers.dev/mcp`
 **SSE fallback:** `https://roots-mcp-server.rootsbybenda.workers.dev/sse`
-**Smithery:** [smithery.ai/server/twohalves/cosmetic-regulatory](https://smithery.ai/server/twohalves/cosmetic-regulatory)
 
 ## Tools
 
@@ -86,23 +85,9 @@ Use the Streamable HTTP endpoint:
 https://roots-mcp-server.rootsbybenda.workers.dev/mcp
 ```
 
-### Install via Smithery
-```bash
-npx -y @smithery/cli install twohalves/cosmetic-regulatory --client claude
-```
-
 ## Rate Limits
 
-No authentication required. Session-level limits keep the free service sustainable:
-
-| Tool | Full-data calls | Basic-data calls | After |
-|------|-----------------|------------------|-------|
-| `check_ingredient` | 1–10 | 11–25 | Upgrade prompt |
-| `check_formula` | 1–5 | — | Upgrade prompt |
-| `calculate_mos` | 1–5 | — | Upgrade prompt |
-| `search_ingredients` | 1–50 | — | Upgrade prompt |
-
-Unlimited access with full 12-jurisdiction profiles, PDF reports, and 22-tool web workspace: [rootsbybenda.com/pricing](https://rootsbybenda.com/pricing).
+Every caller receives full data; a 60 requests/minute abuse-prevention limit applies per IP or validated user key.
 
 ## Built With
 
@@ -117,7 +102,6 @@ Unlimited access with full 12-jurisdiction profiles, PDF reports, and 22-tool we
 
 - Website: [rootsbybenda.com](https://rootsbybenda.com)
 - LinkedIn: [Shahar Ben-David](https://www.linkedin.com/in/shahar-ben-david-25549a3a8/)
-- Smithery publisher: [twohalves](https://smithery.ai/server/twohalves/cosmetic-regulatory)
 
 ## License
 

@@ -1,5 +1,5 @@
 """
-Generate the 82 EU Allergen Cheat Sheet PDF - Two Halves branded.
+Generate the 82 EU Allergen Cheat Sheet PDF - Roots by Benda branded.
 Professional, clean, high-value giveaway for LinkedIn lead gen.
 """
 import json
@@ -19,7 +19,7 @@ class AllergenPDF(FPDF):
             return  # custom cover, skip header on page 1
         self.set_font('Helvetica', 'B', 9)
         self.set_text_color(100, 100, 100)
-        self.cell(0, 8, 'EU 82 Allergen Cheat Sheet  |  Two Halves Regulatory Intelligence', align='C')
+        self.cell(0, 8, 'EU 82 Allergen Cheat Sheet  |  Roots by Benda Regulatory Intelligence', align='C')
         self.ln(10)
         self.set_draw_color(218, 165, 32)
         self.set_line_width(0.5)
@@ -30,7 +30,7 @@ class AllergenPDF(FPDF):
         self.set_y(-15)
         self.set_font('Helvetica', 'I', 8)
         self.set_text_color(130, 130, 130)
-        self.cell(0, 10, f'twohalves.ai  |  Page {self.page_no()}/{{nb}}', align='C')
+        self.cell(0, 10, f'rootsbybenda.com  |  Page {self.page_no()}/{{nb}}', align='C')
 
 
 pdf = AllergenPDF('P', 'mm', 'A4')
@@ -95,7 +95,7 @@ pdf.set_font('Helvetica', '', 10)
 pdf.set_text_color(100, 100, 100)
 pdf.cell(0, 6, 'Regulatory Intelligence for Cosmetics', align='C')
 pdf.ln(6)
-pdf.cell(0, 6, 'twohalves.ai  |  newsletter.twohalves.ai', align='C')
+pdf.cell(0, 6, 'rootsbybenda.com', align='C')
 
 
 # ============ TABLE HELPER ============
@@ -268,7 +268,7 @@ pdf.set_font('Helvetica', '', 10)
 pdf.cell(0, 8, 'Subscribe to our weekly regulatory intelligence digest', align='C')
 pdf.ln(8)
 pdf.set_font('Helvetica', 'B', 11)
-pdf.cell(0, 8, 'newsletter.twohalves.ai', align='C')
+pdf.cell(0, 8, 'rootsbybenda.com', align='C')
 
 # Save
 output_path = 'C:/BENDA_PROJECT/EU-82-Allergen-Cheat-Sheet-Two-Halves.pdf'
