@@ -1,5 +1,7 @@
 # Roots by Benda — Cosmetic Regulatory Intelligence MCP Server
 
+[![smithery badge](https://smithery.ai/badge/twohalves/cosmetic-regulatory)](https://smithery.ai/servers/twohalves/cosmetic-regulatory)
+
 **The world's first cosmetic-regulatory MCP.** Check cosmetic ingredient safety and multi-jurisdiction compliance — EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, ECHA SVHC, California Prop 65, California TFCA, Washington TFCA — backed by 884,345 rows of SCCS opinions, NOAEL studies, CIR conclusions, and pre-calculated Margin of Safety values.
 
 Equivalent data licensed from commercial providers (Coptis, CosmEthics) runs €16,000/year. This MCP is free.
