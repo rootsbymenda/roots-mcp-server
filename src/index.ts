@@ -178,7 +178,7 @@ const SOURCE = "Roots by Benda \u2014 rootsbybenda.com";
 const CONTACT = "SBD@effortlessai.ai";
 const SERVER_NAME = "Roots by Benda \u2014 Cosmetic Intelligence";
 const SERVER_DESCRIPTION =
-  "Roots by Benda answers whether an ingredient is safe in a cosmetic formula by checking 30,553 ingredients, 174,973 NOAEL studies, 99,535 pre-calculated MoS values, and 55+ jurisdiction signals for CPSR, SCCS, INCI, NOAEL, and Margin of Safety work. It is a free, source-linked cosmetic safety MCP with the only pre-calculated SCCS-style MoS layer; ask your AI: 'check if niacinamide is safe for cosmetic use'.";
+  "Check cosmetic ingredient safety across 55 jurisdictions with pre-calculated Margin of Safety values.";
 const DATA_CATALOG = {
   ingredients: "30,553",
   noael_studies: "174,973",
@@ -190,22 +190,22 @@ const TOOL_CATALOG = [
   {
     name: "check_ingredient",
     description:
-      "Look up a cosmetic ingredient by common name, INCI, or CAS number. Returns SCCS safety opinions, EU/US/regional restrictions, NOAEL evidence, sensitization, endocrine-disruptor flags, SVHC status, and pre-calculated Margin of Safety data for cosmetic safety assessment.",
+      "Check a cosmetic ingredient by common name, INCI name, or CAS number. Use when the user asks whether an ingredient such as retinol, niacinamide, phenoxyethanol, or titanium dioxide is safe, restricted, banned, sensitizing, endocrine-active, SVHC-listed, or acceptable for cosmetic use. Do not use for full formula scans, exposure-only MoS math, food additive questions, pharmaceutical actives outside cosmetic use, or broad ingredient discovery. The response includes matched identifiers, SCCS/CIR safety evidence, jurisdictional restrictions, NOAEL data, sensitization records, SVHC flags, and any pre-calculated Margin of Safety values.",
   },
   {
     name: "check_formula",
     description:
-      "Scan a full cosmetic INCI list for compliance and safety risk. Returns per-ingredient matches, restricted or banned substances, jurisdiction-specific flags, and an overall LOW/MODERATE/HIGH formula risk assessment for CPSR and product review workflows.",
+      "Scan a cosmetic formula INCI list for ingredient-level regulatory and safety risk. Use when the user pastes a product label, asks to screen a formula, requests CPSR-style triage, or wants EU/US/multi-jurisdiction flags across many ingredients. Do not use for a single ingredient lookup, a free-text category search, or a custom SCCS Margin of Safety calculation for one ingredient concentration. The response includes normalized ingredient matches, restricted or banned substances, jurisdiction flags, safety notes, and an overall LOW, MODERATE, or HIGH formula risk assessment.",
   },
   {
     name: "search_ingredients",
     description:
-      "Search cosmetic ingredients by partial name, function, or category. Use when an AI agent needs to discover candidate INCI names before running a deeper ingredient or formula safety check.",
+      "Search cosmetic ingredient records by partial name, function, category, or concept. Use when the user needs candidate INCI names for terms like sunscreen, preservative, retinoid, fragrance allergen, humectant, or hyaluronic acid before choosing a specific record. Do not use when the user has an exact INCI/CAS and needs restrictions, NOAEL, or MoS data; use check_ingredient for that. The response includes matching ingredient names, functions or categories where available, safety scores, and regulatory status hints.",
   },
   {
     name: "calculate_mos",
     description:
-      "Calculate cosmetic Margin of Safety using SCCS-style exposure methodology. Returns SED, MoS, pass/fail against the SCCS safety threshold, NOAEL source, dermal absorption basis, and exposure assumptions.",
+      "Calculate cosmetic Margin of Safety from ingredient concentration and product type. Use when the user provides an ingredient, percentage, and product format and asks for SCCS-style MoS, SED, safe concentration, or exposure assessment. Do not use for regulatory lookup alone, formula batch screening, food/pharma exposure questions, or when concentration is unknown. The response includes NOAEL source, systemic exposure dose, dermal absorption basis, product exposure assumptions, MoS value, and pass/fail threshold assessment.",
   },
 ];
 
@@ -242,13 +242,13 @@ export class RootsMCP extends McpAgent<Env> {
           .min(1)
           .max(MAX_QUERY_INPUT_LENGTH)
           .describe(
-            "Common name (e.g. 'Retinol'), INCI name (International Nomenclature of Cosmetic Ingredients — the standard EU/ISO identifier defined in Regulation (EC) No 1223/2009, e.g. 'RETINOL'), or CAS number (Chemical Abstracts Service registry number, e.g. '68-26-8'). INCI is the preferred format for exact matching."
+            "Common cosmetic ingredient name (e.g. 'Retinol'), INCI name (International Nomenclature of Cosmetic Ingredients, the standardized label name used for cosmetics, e.g. 'RETINOL'), or CAS number (Chemical Abstracts Service registry number, e.g. '68-26-8'). INCI is preferred for exact cosmetic regulatory matching."
           ),
         jurisdiction: z
           .enum(COSMETIC_JURISDICTIONS)
           .optional()
           .describe(
-            "Optional filter for jurisdiction_restrictions table. Legacy codes accepted: 'EU', 'US', 'CN', 'CA', 'KR', 'JP', 'BR', 'ASEAN', 'GCC', 'AU', 'IN', 'UK'. If omitted, the response still includes the full jurisdictional_profile across all 12 supported regulatory bodies from jurisdictional_status — use that instead for multi-jurisdiction queries."
+            "Optional cosmetic regulatory market code for focused restriction checks. Legacy codes accepted: 'EU', 'US', 'CN', 'CA', 'KR', 'JP', 'BR', 'ASEAN', 'GCC', 'AU', 'IN', 'UK'. If omitted, the response still includes the full jurisdictional_profile across all 12 supported regulatory bodies from jurisdictional_status for multi-jurisdiction review."
           ),
       },
       async ({ query, jurisdiction }) => {
@@ -725,13 +725,13 @@ export class RootsMCP extends McpAgent<Env> {
           .min(1)
           .max(MAX_BATCH_INPUT_LENGTH)
           .describe(
-            "Comma-separated or newline-separated list of INCI ingredient names (e.g. 'Aqua, Retinol, Cetearyl Alcohol, Titanium Dioxide, Phenoxyethanol'). Max 50 ingredients per call. Typical usage: paste an INCI declaration straight from a product label."
+            "Comma-separated or newline-separated cosmetic INCI declaration exactly as it appears on a product label (e.g. 'Aqua, Retinol, Cetearyl Alcohol, Titanium Dioxide, Phenoxyethanol'). Max 50 ingredients per call. Include preservatives, colorants, UV filters, fragrance allergens, and botanicals because the formula scanner evaluates each line item."
           ),
         jurisdiction: z
           .enum(COSMETIC_JURISDICTIONS)
           .optional()
           .describe(
-            "Optional target jurisdiction for compliance focus. Supported codes: 'EU' (Regulation 1223/2009), 'US' / 'US_FDA', 'Korea_MFDS', 'Japan_MHLW', 'ASEAN', 'Saudi_SFDA', 'Canada_Hotlist', 'Australia_SUSMP'. Legacy codes 'CN', 'CA', 'KR', 'JP', 'BR', 'GCC', 'AU', 'IN', 'UK' accepted for backward compat. If omitted, defaults to EU + US multi-jurisdiction scan."
+            "Optional target cosmetic jurisdiction for compliance focus. Supported codes: 'EU' (Regulation 1223/2009), 'US' / 'US_FDA', 'Korea_MFDS', 'Japan_MHLW', 'ASEAN', 'Saudi_SFDA', 'Canada_Hotlist', 'Australia_SUSMP'. Legacy codes 'CN', 'CA', 'KR', 'JP', 'BR', 'GCC', 'AU', 'IN', 'UK' are accepted for backward compatibility; omit for the default EU + US multi-jurisdiction scan."
           ),
       },
       async ({ ingredients, jurisdiction }) => {
@@ -957,7 +957,7 @@ export class RootsMCP extends McpAgent<Env> {
           .min(1)
           .max(MAX_QUERY_INPUT_LENGTH)
           .describe(
-            "Search keyword matching ingredient name (partial), function, or category. Examples: 'sunscreen' (returns UV filters), 'preservative' (returns parabens, phenoxyethanol, etc.), 'retinoid' (returns retinol family), 'hyaluronic' (returns HA derivatives)."
+            "Cosmetic ingredient discovery keyword matching partial INCI/name, function, category, or ingredient family. Examples: 'sunscreen' for UV filters, 'preservative' for parabens and phenoxyethanol, 'retinoid' for retinol-family ingredients, or 'hyaluronic' for HA derivatives."
           ),
         limit: z
           .number()
@@ -965,7 +965,7 @@ export class RootsMCP extends McpAgent<Env> {
           .min(1)
           .max(MAX_SEARCH_RESULTS)
           .optional()
-          .describe("Max results to return (1-20, default 10). Use higher limits for broad exploratory queries; lower limits for specific searches."),
+          .describe("Maximum number of cosmetic ingredient matches to return (1-20, default 10). Use higher limits for broad category discovery and lower limits for exact INCI/name searches."),
       },
       async ({ query, limit }) => {
         const maxResults = Math.min(Math.max(limit || 10, 1), MAX_SEARCH_RESULTS);
@@ -1031,21 +1031,21 @@ export class RootsMCP extends McpAgent<Env> {
           .min(1)
           .max(MAX_NAME_LENGTH)
           .describe(
-            "Ingredient name, INCI name, or CAS number (e.g. 'retinol', '68-26-8')"
+            "Cosmetic ingredient common name, INCI name, or CAS number for the MoS calculation (e.g. 'retinol', 'RETINOL', '68-26-8'). Use the exact INCI when available so NOAEL and dermal absorption evidence map to the correct cosmetic ingredient."
           ),
         concentration: z
           .number()
           .finite()
           .min(0.000001)
           .max(100)
-          .describe("Concentration of ingredient in the product (%, e.g. 0.5 for 0.5%)"),
+          .describe("Ingredient concentration in the finished cosmetic product as percent weight/weight (e.g. 0.5 for 0.5%). Use the maximum intended use concentration for conservative SCCS-style Margin of Safety assessment."),
         product_type: z
           .string()
           .trim()
           .min(1)
           .max(MAX_NAME_LENGTH)
           .describe(
-            "Product type (e.g. 'body lotion', 'shampoo', 'lipstick', 'face cream', 'hand cream', 'shower gel', 'toothpaste', 'mouthwash', 'hair styling', 'deodorant')"
+            "Cosmetic product type that determines exposure assumptions (e.g. 'body lotion', 'shampoo', 'lipstick', 'face cream', 'hand cream', 'shower gel', 'toothpaste', 'mouthwash', 'hair styling', 'deodorant'). Choose the closest leave-on, rinse-off, oral-care, hair, or lip product category."
           ),
         body_weight: z
           .number()
@@ -1053,7 +1053,7 @@ export class RootsMCP extends McpAgent<Env> {
           .min(1)
           .max(500)
           .optional()
-          .describe("Body weight in kg (default: 60 for adults)"),
+          .describe("Consumer body weight in kilograms for systemic exposure calculations (default: 60 for adults). Override when assessing children, low-body-weight consumers, or a scenario with a defined SCCS body-weight assumption."),
         dermal_absorption: z
           .number()
           .finite()
@@ -1061,7 +1061,7 @@ export class RootsMCP extends McpAgent<Env> {
           .max(100)
           .optional()
           .describe(
-            "Dermal absorption percentage override (if known from studies). If not provided, uses SCCS default of 50%."
+            "Dermal absorption percentage override from ingredient-specific toxicology or SCCS evidence. If not provided, the calculator uses the built-in default assumption and reports the absorption basis in the MoS result."
           ),
       },
       async ({ ingredient, concentration, product_type, body_weight, dermal_absorption }) => {
