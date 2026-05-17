@@ -2,6 +2,12 @@ import { McpAgent } from "agents/mcp";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
+const READ_ONLY_TOOL_ANNOTATIONS = {
+  readOnlyHint: true,
+  destructiveHint: false,
+  openWorldHint: false,
+} as const;
+
 // Escape LIKE special characters in user input to prevent wildcard injection
 function escapeLike(s: string): string {
   return s.replace(/[%_\\]/g, '\\$&');
@@ -251,6 +257,7 @@ export class RootsMCP extends McpAgent<Env> {
             "Optional cosmetic regulatory market code for focused restriction checks. Legacy codes accepted: 'EU', 'US', 'CN', 'CA', 'KR', 'JP', 'BR', 'ASEAN', 'GCC', 'AU', 'IN', 'UK'. If omitted, the response still includes the full jurisdictional_profile across all 12 supported regulatory bodies from jurisdictional_status for multi-jurisdiction review."
           ),
       },
+      READ_ONLY_TOOL_ANNOTATIONS,
       async ({ query, jurisdiction }) => {
         const q = normalizeQuery(query);
 
@@ -734,6 +741,7 @@ export class RootsMCP extends McpAgent<Env> {
             "Optional target cosmetic jurisdiction for compliance focus. Supported codes: 'EU' (Regulation 1223/2009), 'US' / 'US_FDA', 'Korea_MFDS', 'Japan_MHLW', 'ASEAN', 'Saudi_SFDA', 'Canada_Hotlist', 'Australia_SUSMP'. Legacy codes 'CN', 'CA', 'KR', 'JP', 'BR', 'GCC', 'AU', 'IN', 'UK' are accepted for backward compatibility; omit for the default EU + US multi-jurisdiction scan."
           ),
       },
+      READ_ONLY_TOOL_ANNOTATIONS,
       async ({ ingredients, jurisdiction }) => {
         const names = ingredients
           .split(/[,\n]+/)
@@ -967,6 +975,7 @@ export class RootsMCP extends McpAgent<Env> {
           .optional()
           .describe("Maximum number of cosmetic ingredient matches to return (1-20, default 10). Use higher limits for broad category discovery and lower limits for exact INCI/name searches."),
       },
+      READ_ONLY_TOOL_ANNOTATIONS,
       async ({ query, limit }) => {
         const maxResults = Math.min(Math.max(limit || 10, 1), MAX_SEARCH_RESULTS);
         const q = normalizeQuery(query);
@@ -1064,6 +1073,7 @@ export class RootsMCP extends McpAgent<Env> {
             "Dermal absorption percentage override from ingredient-specific toxicology or SCCS evidence. If not provided, the calculator uses the built-in default assumption and reports the absorption basis in the MoS result."
           ),
       },
+      READ_ONLY_TOOL_ANNOTATIONS,
       async ({ ingredient, concentration, product_type, body_weight, dermal_absorption }) => {
         // Input bounds — K40 audit P0 (calculate_mos:913-927 unsafe numeric inputs).
         // Reject zero/negative/non-finite values that produce Infinity or fabricated
