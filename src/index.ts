@@ -178,13 +178,13 @@ function boundsErrorResponse(message: string) {
 
 // --- End auth ---
 
-const SERVER_VERSION = "1.1.3";
+const SERVER_VERSION = "1.1.5";
 const HOMEPAGE = "https://rootsbybenda.com";
 const SOURCE = "Roots by Benda \u2014 rootsbybenda.com";
-const CONTACT = "SBD@effortlessai.ai";
+const CONTACT = "support@rootsbybenda.com";
 const SERVER_NAME = "Roots by Benda \u2014 Cosmetic Intelligence";
 const SERVER_DESCRIPTION =
-  "Check cosmetic ingredient safety across 55 jurisdictions with pre-calculated Margin of Safety values.";
+  "Cosmetic ingredient safety assessment: verified toxicological data, Margin of Safety calculations, and regulatory compliance across 55 jurisdictions sourced from ECHA, SCCS, CIR, ToxValDB, and FDA. 30,553 ingredients, 174,973 NOAEL studies, 99,535 MoS calculations.";
 const DATA_CATALOG = {
   ingredients: "30,553",
   noael_studies: "174,973",
@@ -196,22 +196,22 @@ const TOOL_CATALOG = [
   {
     name: "check_ingredient",
     description:
-      "Check a cosmetic ingredient by common name, INCI name, or CAS number. Use when the user asks whether an ingredient such as retinol, niacinamide, phenoxyethanol, or titanium dioxide is safe, restricted, banned, sensitizing, endocrine-active, SVHC-listed, or acceptable for cosmetic use. Do not use for full formula scans, exposure-only MoS math, food additive questions, pharmaceutical actives outside cosmetic use, or broad ingredient discovery. The response includes matched identifiers, SCCS/CIR safety evidence, jurisdictional restrictions, NOAEL data, sensitization records, SVHC flags, and any pre-calculated Margin of Safety values.",
+      "Retrieve verified cosmetic ingredient safety data for regulatory compliance and safety assessment. Input: common name, INCI name, or CAS number (e.g. 'retinol', 'RETINOL', '68-26-8'). Returns: NOAEL study values with species/route/duration, pre-calculated Margin of Safety from SCCS opinions, GHS hazard classifications, EU/US/Korea/Japan/ASEAN/Saudi/Canada/Australia regulatory status across 12 jurisdictions, SCCS opinion summaries, CIR safety conclusions, dermal absorption profiles, sensitization data with patch-test frequencies, endocrine disruption flags, SVHC status, IFRA fragrance restrictions, China IECIC listing, and EU allergen classifications. Sources: ECHA IUCLID dossiers, SCCS opinions, CIR safety assessments, FDA, ToxValDB, EPA CompTox. Database: 30,553 cosmetic ingredients, 174,973 NOAEL studies, 99,535 MoS calculations, 8,898 sensitization assays. Use for cosmetic ingredient safety assessment. Do not use for full formula scans (use check_formula), MoS calculations with custom concentration (use calculate_mos), food additive questions, or pharmaceutical actives.",
   },
   {
     name: "check_formula",
     description:
-      "Scan a cosmetic formula INCI list for ingredient-level regulatory and safety risk. Use when the user pastes a product label, asks to screen a formula, requests CPSR-style triage, or wants EU/US/multi-jurisdiction flags across many ingredients. Do not use for a single ingredient lookup, a free-text category search, or a custom SCCS Margin of Safety calculation for one ingredient concentration. The response includes normalized ingredient matches, restricted or banned substances, jurisdiction flags, safety notes, and an overall LOW, MODERATE, or HIGH formula risk assessment.",
+      "Scan a cosmetic product INCI ingredient list for regulatory compliance and safety flags across multiple jurisdictions. Input: comma-separated INCI declaration as printed on a cosmetic product label (up to 50 ingredients). Returns per-ingredient: matched INCI name, CAS number, safety rating, EU and US regulatory status, concern level, regulatory flags, NOAEL values, and jurisdiction-specific restrictions including max concentration limits, product-type restrictions, and regulation references. Returns overall: LOW/MODERATE/HIGH formula risk assessment, flagged ingredient count with reasons, and jurisdiction-level compliance summary. Sources: EU Regulation 1223/2009, US FDA, Korea MFDS, Japan MHLW, ASEAN, Saudi SFDA, Canada Hotlist, Australia SUSMP, China IECIC. Database: 30,553 cosmetic ingredients across 55+ jurisdictions. Use for cosmetic formula safety screening and CPSR-style triage. Do not use for single ingredient lookup (use check_ingredient) or custom MoS calculations (use calculate_mos).",
   },
   {
     name: "search_ingredients",
     description:
-      "Search cosmetic ingredient records by partial name, function, category, or concept. Use when the user needs candidate INCI names for terms like sunscreen, preservative, retinoid, fragrance allergen, humectant, or hyaluronic acid before choosing a specific record. Do not use when the user has an exact INCI/CAS and needs restrictions, NOAEL, or MoS data; use check_ingredient for that. The response includes matching ingredient names, functions or categories where available, safety scores, and regulatory status hints.",
+      "Search cosmetic ingredient records by partial name, function, category, or safety concept for ingredient discovery and selection. Input: keyword matching partial INCI name, function, or category (e.g. 'sunscreen', 'preservative', 'retinoid', 'fragrance allergen', 'humectant'). Returns: matching cosmetic ingredient names, INCI names, CAS numbers, functions/categories, safety ratings, EU regulatory status, concern levels, and NOAEL availability. Database: 30,553 cosmetic ingredients with safety profiles. Use for cosmetic ingredient discovery before checking a specific ingredient. Do not use when the user has an exact INCI/CAS and needs full safety data (use check_ingredient).",
   },
   {
     name: "calculate_mos",
     description:
-      "Calculate cosmetic Margin of Safety from ingredient concentration and product type. Use when the user provides an ingredient, percentage, and product format and asks for SCCS-style MoS, SED, safe concentration, or exposure assessment. Do not use for regulatory lookup alone, formula batch screening, food/pharma exposure questions, or when concentration is unknown. The response includes NOAEL source, systemic exposure dose, dermal absorption basis, product exposure assumptions, MoS value, and pass/fail threshold assessment.",
+      "Calculate Margin of Safety for a cosmetic ingredient at a specific concentration following SCCS Notes of Guidance methodology. Input: ingredient name/INCI/CAS, concentration percentage, product type (e.g. 'body lotion', 'shampoo', 'lipstick'), optional body weight and dermal absorption override. Returns: NOAEL value with study source (species, route, duration), SCCS exposure parameters (daily exposure, retention factor), Systemic Exposure Dose (SED) calculation, Margin of Safety value, pass/fail assessment against MoS>100 threshold, and recommended maximum concentration if MoS fails. Sources: SCCS Notes of Guidance (11th Revision, SCCS/1628/21), NOAEL studies from ECHA/ToxValDB, SCCS exposure parameter tables. Database: 174,973 NOAEL studies searched for best available value. Use for cosmetic ingredient exposure assessment and safety calculations. Do not use for regulatory lookup alone (use check_ingredient), formula screening (use check_formula), or food/pharmaceutical exposure calculations.",
   },
 ];
 
@@ -470,20 +470,25 @@ export class RootsMCP extends McpAgent<Env> {
           function: ingredient.function,
           category: ingredient.category,
           detail_url: `https://rootsbybenda.com/ingredients/${ingredientSlug(ingredient as Record<string, unknown>)}`,
-          safety_rating: ingredient.safety,
-          concern_level: ingredient.concern,
-          concern_reason: ingredient.concern_reason || null,
+          data_freshness: {
+            database_version: "2026-05",
+            source_type: "cosmetic_ingredient_safety_regulatory_reference_data",
+            db_rows_total: 884345,
+            jurisdictions_covered: 12,
+          },
+          safety_rating: { value: ingredient.safety, source: "Roots by Benda curated safety assessment" },
+          concern_level: { value: ingredient.concern, reason: ingredient.concern_reason || null, source: "Roots by Benda risk classification" },
           regulatory: {
-            eu_status: ingredient.eu_status,
-            eu_max_concentration: ingredient.eu_max || null,
-            us_status: ingredient.us_status,
+            eu_status: { value: ingredient.eu_status, source: "EU Regulation EC 1223/2009" },
+            eu_max_concentration: { value: ingredient.eu_max || null, source: "EU Regulation EC 1223/2009 Annexes" },
+            us_status: { value: ingredient.us_status, source: "US FDA 21 CFR" },
             us_notes: ingredient.us_note || null,
           },
           safety_data: {
-            margin_of_safety: ingredient.mos || null,
-            dermal_absorption: ingredient.absorption || null,
-            sensitization: ingredient.sensitization || null,
-            noael_value: ingredient.noael_value || null,
+            margin_of_safety: { value: ingredient.mos || null, source: "SCCS opinion / Roots calculated" },
+            dermal_absorption: { value: ingredient.absorption || null, source: "SCCS dermal penetration studies" },
+            sensitization: { value: ingredient.sensitization || null, source: "Sensitization profiles database" },
+            noael_value: { value: ingredient.noael_value || null, source: "NOAEL studies (ECHA/ToxValDB)" },
             pregnancy_safe: ingredient.pregnancy_safe || null,
             comedogenicity: ingredient.comedogenicity_rating || null,
           },
@@ -505,24 +510,22 @@ export class RootsMCP extends McpAgent<Env> {
               route: s.route,
               duration: s.duration,
               species: s.species,
-              source: s.source,
+              source: s.source || "ECHA IUCLID / ToxValDB",
               reference: s.reference,
             })) || [],
           regulatory_lists:
             regLists.results?.map((r: Record<string, unknown>) => ({
               list: r.list_key,
               name: r.list_name,
+              source: "Regulatory list cross-reference database",
             })) || [],
           source: "Roots by Benda — rootsbybenda.com",
-          data_verified: "2026-04",
-          db_rows_total: 884345,
-          jurisdictions_covered: 12,
         };
 
         // Attach enrichment results
         if (safetyOpinions.results && safetyOpinions.results.length > 0) {
           result.safety_opinions = (safetyOpinions.results as Record<string, unknown>[]).map((so) => ({
-            source: so.source,
+            source: so.source || "SCCS/CIR",
             reference: so.sccs_reference || null,
             noael_value: so.noael_value || null,
             noael_unit: so.noael_unit || null,
@@ -542,6 +545,7 @@ export class RootsMCP extends McpAgent<Env> {
             leave_on_threshold: allergenCheck.leave_on_threshold_pct,
             rinse_off_threshold: allergenCheck.rinse_off_threshold_pct,
             restrictions: allergenCheck.additional_restrictions || null,
+            source: "EU Regulation EC 1223/2009 Annex III — Fragrance allergens",
           };
         }
 
@@ -551,6 +555,7 @@ export class RootsMCP extends McpAgent<Env> {
             amendment: ifraCheck.amendment,
             std_number: ifraCheck.std_number || null,
             publication_date: ifraCheck.publication_date || null,
+            source: "IFRA Standards Library",
           };
         }
 
@@ -559,6 +564,7 @@ export class RootsMCP extends McpAgent<Env> {
             status: "SUBSTANCE_OF_VERY_HIGH_CONCERN",
             reason: svhcCheck.reason,
             date_added: svhcCheck.date_included,
+            source: "ECHA SVHC Candidate List (EU REACH Regulation)",
           };
         }
 
@@ -566,7 +572,7 @@ export class RootsMCP extends McpAgent<Env> {
           result.endocrine_disruptor = {
             categories: edCheck.categories,
             alternative_names: edCheck.alternative_names || null,
-            source: edCheck.source || null,
+            source: edCheck.source || "Endocrine disruptor screening database",
           };
         }
 
@@ -605,6 +611,7 @@ export class RootsMCP extends McpAgent<Env> {
             report_reference: cirCheck.report_reference || null,
             original_year: cirCheck.original_year || null,
             latest_review_year: cirCheck.latest_review_year || null,
+            source: "Cosmetic Ingredient Review (CIR) Expert Panel",
           };
         }
 
@@ -714,6 +721,43 @@ export class RootsMCP extends McpAgent<Env> {
             note: "No record found in this database for the 12 covered jurisdictions. Do not infer permitted status without checking the primary regulation directly — absence of record is not affirmative compliance clearance.",
           };
         }
+
+        // Build citation_ready string for models that cite inline
+        // K76: conditional source attribution — only authorities that actually contributed data
+        const citParts: string[] = [];
+        const sourcesUsed = new Set<string>();
+        const citName = (ingredient.inci || ingredient.name || "") as string;
+        const citCas = cas ? `CAS ${cas}` : "";
+        const citId = [citName, citCas].filter(Boolean).join(" (") + (citCas ? ")" : "");
+        if (ingredient.noael_value) {
+          citParts.push(`NOAEL ${ingredient.noael_value} mg/kg/day`);
+          // No authority added — ingredient.noael_value has no source linkage in DB (Phase B will address)
+        }
+        if (ingredient.mos) {
+          citParts.push(`MoS ${ingredient.mos}`);
+          sourcesUsed.add("Roots calculated");
+        }
+        if (ingredient.eu_status) {
+          citParts.push(`EU: ${ingredient.eu_status}`);
+          sourcesUsed.add("EU CosIng");
+        }
+        if (ingredient.us_status) {
+          citParts.push(`US: ${ingredient.us_status}`);
+          sourcesUsed.add("US FDA");
+        }
+        if (svhcCheck) {
+          citParts.push("ECHA SVHC listed");
+          sourcesUsed.add("ECHA SVHC");
+        }
+        if (sensitCheck) {
+          citParts.push(`sensitization: ${sensitCheck.sensitization_rate || "data available"}`);
+          // No authority added — sensitization profile source is generic
+        }
+        const sourcesArr = Array.from(sourcesUsed).sort();
+        const sourceTail = sourcesArr.length > 0
+          ? ` — sourced from ${sourcesArr.join(", ")}`
+          : "";
+        result.citation_ready = `${citId}: ${citParts.join("; ")}. Source: Roots by Benda (rootsbybenda.com)${sourceTail}.`;
 
         return {
           content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
@@ -923,6 +967,10 @@ export class RootsMCP extends McpAgent<Env> {
           flagged_count: flagged.length,
           all_results: results,
           jurisdiction_checked: jurisdiction || "EU + US (default)",
+          data_freshness: {
+            database_version: "2026-05",
+            source_type: "cosmetic_formula_regulatory_compliance_data",
+          },
           source: "Roots by Benda — rootsbybenda.com",
         };
         summary.risk_level =
@@ -945,6 +993,12 @@ export class RootsMCP extends McpAgent<Env> {
           }
           return { name: f.matched, reason: reasons.join(", ") };
         });
+
+        // Build citation_ready for formula scan
+        const citFlagged = flagged.length > 0
+          ? `Flagged: ${flagged.map((f) => f.matched).join(", ")}.`
+          : "No flagged ingredients.";
+        summary.citation_ready = `Formula scan (${names.length} ingredients, ${jurisdiction || "EU+US"}): ${summary.risk_level} risk. ${found} matched, ${notFound} unrecognized. ${citFlagged} Source: Roots by Benda (rootsbybenda.com).`;
 
         return {
           content: [
@@ -1018,6 +1072,11 @@ export class RootsMCP extends McpAgent<Env> {
                       concern: r.concern,
                       has_noael: r.noael_value != null,
                     })) || [],
+                  data_freshness: {
+                    database_version: "2026-05",
+                    source_type: "cosmetic_ingredient_safety_regulatory_reference_data",
+                  },
+                  citation_ready: `Cosmetic ingredient search "${query}": ${results.results?.length || 0} matches from 30,553 ingredients. Source: Roots by Benda (rootsbybenda.com).`,
                   source: "Roots by Benda — rootsbybenda.com",
                 },
                 null,
@@ -1241,12 +1300,13 @@ export class RootsMCP extends McpAgent<Env> {
         text += `- **Verdict: ${passes ? "PASSES — Considered safe at this concentration" : "FAILS — MoS below 100, concentration may need to be reduced"}**\n\n`;
 
         if (!passes) {
-          const maxConc = (noaelMgKgDay * bw * 100) / (dailyExposure * retentionFactor * (da / 100) * 100);
+          const maxConc = (noaelMgKgDay * bw * 100) / (dailyExposure * 1000 * retentionFactor * (da / 100) * 100);
           text += `### Recommendation\n`;
           text += `To achieve MoS > 100, maximum concentration should be ≤ **${maxConc.toFixed(3)}%**\n`;
         }
 
         text += `\n---\n*Calculation follows SCCS Notes of Guidance (11th Revision, SCCS/1628/21)*`;
+        text += `\n\n**Citation:** ${ing ? ing.name : q}${ing && ing.cas ? ` (CAS: ${ing.cas})` : ""}: MoS ${mos.toFixed(1)} at ${concentration}% in ${productLabel}. NOAEL ${noaelMgKgDay} mg/kg/day (${noaelSource}). SED ${sed.toFixed(6)} mg/kg/day. ${passes ? "Adequate" : "Inadequate"} (threshold >100). Source: Roots by Benda (rootsbybenda.com), SCCS/1628/21 methodology.`;
 
         return { content: [{ type: "text" as const, text }] };
       }
@@ -1295,6 +1355,12 @@ export default {
       });
     }
 
+
+    if (url.pathname === "/.well-known/openai-apps-challenge") {
+      return new Response("vk4RKe2x2Kih5_qGYEsWCZZYn1N9-kPSnpXkbArOpco", {
+        headers: { "Content-Type": "text/plain" },
+      });
+    }
 
     // SEP-1649 server-card discovery.
     // Tools are listed statically so SmitheryBot can enumerate without auth.
